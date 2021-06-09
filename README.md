@@ -43,7 +43,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 3. Type the following commands in order :
 
-   - npm init -y (Will create a package.json file inside the folder indicating it's a node js app)
    - npm install (Will install the required packages of this project for node js)
    - code . (Will open up visual studio code in the folder)
 
