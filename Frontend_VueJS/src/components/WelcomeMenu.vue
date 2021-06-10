@@ -5,11 +5,11 @@
 		<div class="navcontainer">
 			<img src="/assets\uberlogo.png" alt="" srcset="" id="uberlogo" />
 			<img
-				src="/assets\settings.png"
+				src="/assets\profile.png"
 				alt=""
 				srcset=""
 				id="settingsicon"
-				@click="logoutUser"
+				@click="showprofile = true"
 			/>
 		</div>
 
@@ -44,10 +44,18 @@
 	<div class="driverearning" v-if="type === 'D' && driverdata.total_earning">
 		<h1>Tk. {{ driverdata.total_earning }}</h1>
 	</div>
+
+	<ProfileCard
+		v-if="showprofile"
+		:udata="user"
+		:clivdata="cliverdata"
+		@closeprofile="showprofile = false"
+	></ProfileCard>
 </template>
 
 <script>
 	import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
+	import ProfileCard from './ProfileCard.vue';
 
 	export default {
 		props: {
@@ -59,6 +67,15 @@
 			type: '', //Type of User
 			myrating: null,
 		},
+		components: {
+			ProfileCard,
+		},
+
+		data() {
+			return {
+				showprofile: false,
+			};
+		},
 
 		methods: {
 			...mapMutations(['setRating', 'setDRating']),
@@ -68,14 +85,6 @@
 			},
 			setDriverRating(rating) {
 				this.setDRating(rating);
-			},
-
-			logoutUser() {
-				localStorage.removeItem('token');
-				/* this.$router.push({
-					path: '/',
-				}); */
-				location.reload();
 			},
 		},
 

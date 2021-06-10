@@ -161,6 +161,11 @@
 
 		<div class="form-c owner-container1" id="owner1">
 			<form class="owner1">
+				<i
+					class="fas fa-arrow-left"
+					id="backhi"
+					style="margin-left:-300px; color: white ; margin-top:15px; margin-bottom:-20px"
+				></i>
 				<p class="create">Create Account</p>
 				<p class="aowner">As a car owner</p>
 				<input type="text" placeholder="First Name" required v-model="cfname" />
@@ -174,6 +179,11 @@
 		</div>
 		<div class="form-c owner-container2" id="owner2">
 			<form class="owner2">
+				<i
+					class="fas fa-arrow-left"
+					id="backown1"
+					style="margin-left:-300px; color: white ; margin-top:-40px"
+				></i>
 				<p class="create">Create Account</p>
 				<p class="aowner">As a car owner</p>
 				<input type="number" placeholder="NID No" required />
@@ -377,8 +387,22 @@
 
 			const backtochoose = document.getElementById('backtochoose');
 
-			//////Preventing the default for button events.
+			const backtod1 = document.getElementById('backtod1');
 
+			const backhi = document.getElementById('backhi');
+			const backown1 = document.getElementById('backown1');
+
+			//////Preventing the default for button events.
+			backown1.addEventListener('click', function(event) {
+				event.preventDefault();
+			});
+
+			backhi.addEventListener('click', function(event) {
+				event.preventDefault();
+			});
+			backtod1.addEventListener('click', function(event) {
+				event.preventDefault();
+			});
 			userlogin.addEventListener('click', function(event) {
 				event.preventDefault();
 			});
@@ -441,12 +465,12 @@
 			});
 
 			backclient.addEventListener('click', () => {
+				// client.classList.remove("position");
+				// signin.classList.add("erase");
 				chooseuser.classList.remove('erase');
-				client.classList.remove('position');
-				signin.classList.add('erase');
 				// hithere.classList.add("remove");
-				driver1.classList.remove('showdriver');
-				driver2.classList.remove('showdriver');
+				// driver1.classList.remove("showdriver");
+				// driver2.classList.remove("showdriver");
 			});
 
 			driverbutton.addEventListener('click', () => {
@@ -460,11 +484,11 @@
 
 			backtochoose.addEventListener('click', () => {
 				chooseuser.classList.remove('erase');
-				driver1.classList.remove('showdriver');
-				driver2.classList.remove('showdriver');
-				signin.classList.add('erase');
+				// driver1.classList.remove("showdriver");
+				// driver2.classList.remove("showdriver");
+				// signin.classList.add("erase");
 				// hithere.classList.add("remove");
-				client.classList.remove('position');
+				// client.classList.remove("position");
 			});
 
 			next.addEventListener('click', () => {
@@ -475,6 +499,13 @@
 				client.classList.remove('position');
 			});
 
+			backtod1.addEventListener('click', () => {
+				driver2.classList.remove('showdriver');
+				driver1.classList.add('showdriver');
+				chooseuser.classList.add('erase');
+				signin.classList.add('erase');
+				client.classList.remove('position');
+			});
 			owner.addEventListener('click', () => {
 				ovcontainer.classList.add('remove');
 				hithere.classList.add('remove');
@@ -494,6 +525,18 @@
 				client.classList.remove('position');
 				owner1.classList.remove('showowner');
 				owner2.classList.add('showowner');
+			});
+
+			backhi.addEventListener('click', () => {
+				hithere.classList.remove('remove');
+				owner1.classList.remove('showowner');
+				ovcontainer.classList.remove('remove');
+				chooseuser.classList.remove('erase');
+			});
+
+			backown1.addEventListener('click', () => {
+				owner1.classList.add('showowner');
+				owner2.classList.remove('showowner');
 			});
 		},
 	};

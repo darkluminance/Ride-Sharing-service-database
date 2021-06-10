@@ -316,7 +316,7 @@ app.post('/login', (request, response) => {
 	const username = request.body.username;
 	const password = request.body.password;
 
-	console.log(`${username}, ${password}`);
+	// console.log(`${username}, ${password}`);
 
 	getsignIn(request, response, username, password);
 });

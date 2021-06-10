@@ -4,7 +4,7 @@
 		<!-- Nav bar -->
 		<div class="navcontainer">
 			<img src="/assets\uberlogo.png" alt="" srcset="" id="uberlogo" />
-			<img src="/assets\settings.png" alt="" srcset="" id="settingsicon" />
+			<!-- <img src="/assets\profile.png" alt="" srcset="" id="settingsicon" /> -->
 		</div>
 
 		<!-- Shows the location names -->
