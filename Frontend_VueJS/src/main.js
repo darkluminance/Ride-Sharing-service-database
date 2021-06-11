@@ -7,7 +7,3 @@ createApp(Home)
 	.use(router)
 	.use(store)
 	.mount('#app');
-
-//TEST GITHUB
-
-//MMHMMMMMMMMMM
