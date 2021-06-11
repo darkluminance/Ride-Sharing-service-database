@@ -326,10 +326,11 @@
 				});
 				let theresponse = await fetched.json();
 
-				localStorage.setItem('token', theresponse.uid);
 				if (!fetched.ok) {
 					alert(theresponse.message);
+					localStorage.removeItem('token');
 				} else {
+					localStorage.setItem('token', theresponse.uid);
 					console.log('Success ', localStorage.getItem('token'));
 
 					// this.setAuthentication;

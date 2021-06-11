@@ -29,8 +29,9 @@
 			<MapClient
 				@updatestartlocationnamevalue="getname"
 				@routesearched="isRouteSearching = true"
-				@updatelocation="updateuserlocation"
+				@updatelocationc="updateuserlocation"
 				ref="mapComponent"
+				:user_id="uid"
 			></MapClient>
 		</div>
 	</div>
@@ -38,8 +39,9 @@
 	<!-- If driver -->
 	<div class="driver" v-if="userdata.type === 'D'" style="display: flex;">
 		<map-driver
-			@updatelocation="updateuserlocation"
+			@updatelocationd="updateuserlocation"
 			ref="dmapComponent"
+			:user_id="uid"
 		></map-driver>
 
 		<welcome-menu
@@ -49,6 +51,7 @@
 			:type="'D'"
 			:driverdata="this.driverdata"
 			:cliverdata="this.cliverdata"
+			v-if="!isTripAccepted"
 		></welcome-menu>
 
 		<div v-if="foundreq" class="requestfound">
@@ -57,6 +60,9 @@
 				@accepted="acceptrequest"
 			></TripRequest>
 		</div>
+
+		<AcceptRequestMenuClientt v-if="isTripAccepted" @cancelTrip="canceltrip">
+		</AcceptRequestMenuClientt>
 	</div>
 
 	<!-- Loading screen -->
@@ -80,6 +86,7 @@
 	import CircleSpinner from '../components/Animations/CircleSpinner';
 	import TripRequest from '../components/TripRequest.vue';
 	import AcceptRequestMenu from '../components/AcceptRequestMenu.vue';
+	import AcceptRequestMenuClientt from '../components/AcceptRequestMenuClientt.vue';
 	import { io } from 'socket.io-client';
 	import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
 
@@ -98,6 +105,7 @@
 			CircleSpinner,
 			TripRequest,
 			AcceptRequestMenu,
+			AcceptRequestMenuClientt,
 		},
 
 		data() {
@@ -163,8 +171,9 @@
 				this.accepted = true; */
 			});
 
-			socket.on('request', (socketid, tdata) => {
+			socket.on('request', (socketid, tdata, udata) => {
 				if (this.userdata.type === 'D' && !this.foundreq) {
+					console.log('wtf is wrong with you', udata);
 					this.foundreq = true;
 					this.socketid_of_requester = socketid;
 					this.tripdetails = tdata;
@@ -175,6 +184,11 @@
 					this.$store.commit('setTrippickup', tdata[0]);
 					this.$store.commit('setTripDestination', tdata[3]);
 					this.$store.commit('setTripFare', tdata[4]);
+					this.$store.commit('setUUID', udata[0]);
+					this.$store.commit('setUName', udata[1]);
+					this.$store.commit('setUPhone', udata[2]);
+					this.$store.commit('setULocation', udata[3]);
+					this.$store.commit('setURating', udata[4]);
 
 					console.log(
 						this.socketid_of_requester,
@@ -203,8 +217,14 @@
 
 			sendrequest() {
 				let tripdetails = this.$store.getters.getTripDetails;
-				console.log(tripdetails);
-				socket.emit('request', socket.id, tripdetails);
+
+				this.$store.commit('setUName', this.userdata.name);
+				this.$store.commit('setUPhone', this.userdata.phone);
+				this.$store.commit('setUUID', this.uid);
+
+				let userdetails = this.$store.getters.getUData;
+				// console.log(tripdetails);
+				socket.emit('request', socket.id, tripdetails, userdetails);
 			},
 
 			acceptrequest() {
@@ -298,20 +318,21 @@
 
 				// console.log('to send', sendingdata);
 
-				fetch('http://localhost:5000/updateuserlocation', {
+				await fetch('http://localhost:5000/updateuserlocation', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify(sendingdata),
 				})
-					.then((response) => response.json())
+					/* .then((response) => response.json())
 					.then((data) => {
 						// console.log('Success:', data);
-					})
+					}) */
 					.catch((error) => {
-						console.error('Error:', error);
-						alert('An error occured. Please reload the page again');
+						console.error('Error:', error.message);
+						console.log(loc, this.userdata.type);
+						// alert('An error occured. Please reload the page again');
 					});
 			},
 
@@ -433,7 +454,7 @@
 			//Now after 800ms search the database for the client or driver data of that user id
 			setTimeout(() => {
 				if (this.userdata.type === 'D') this.getDriverData();
-			}, 1800);
+			}, 800);
 
 			this.$store.commit('setTripType', 'Standard');
 		},

@@ -44,9 +44,14 @@ async function getUserData(req, res, uid) {
 		console.log('Connected to get user data');
 	} catch (error) {
 		//If any error occurs while connecting or fetching data
+		console.log(error.message);
+		console.log(uid);
+		res.status(401).send(error.message);
 	} finally {
 		if (connection) {
-			await connection.close(); //Closes the connection
+			try {
+				await connection.close(); //Closes the connection
+			} catch (error) {}
 			console.log('Connection ended');
 		}
 		res.status(200).send(result.rows); //Sends back the data with success status 200
@@ -72,9 +77,13 @@ async function getCliverData(req, res, uid) {
 		console.log('Connected to get cliver data');
 	} catch (error) {
 		//If any error occurs while connecting or fetching data
+		console.log(error.message);
+		res.status(401).send(error.message);
 	} finally {
 		if (connection) {
-			await connection.close(); //Closes the connection
+			try {
+				await connection.close(); //Closes the connection
+			} catch (error) {}
 			console.log('Connection ended');
 		}
 		res.status(200).send(result.rows); //Sends back the data with success status 200
@@ -160,8 +169,51 @@ async function sendUserData(req, res, data) {
 //
 //
 //Update user's current location
+async function getlastlocation(req, res, uid, type) {
+	let query = '';
+	// console.log(data, Date.now());
+
+	//Set query based on user types
+	if (type === 'C') {
+		query = `
+				SELECT C_Location_X, C_Location_Y
+				FROM clientt
+				WHERE u_id = '${uid}'
+		`;
+	} else if (type === 'D') {
+		query = `
+			SELECT Dr_Location_X, Dr_Location_Y
+			FROM driver
+			WHERE u_id = '${uid}'
+	`;
+	}
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		console.log(query);
+
+		result = await connection.execute(query);
+	} catch (error) {
+		console.log('eror', error.message);
+		res.status(401).send(error.message);
+	} finally {
+		if (connection) {
+			try {
+				await connection.close();
+			} catch (error) {}
+
+			// console.log('Connection ended');
+		}
+		res.status(200).send(result.rows[0]);
+	}
+}
+//
+//
+//
+//Update user's current location
 async function updateUserLocation(req, res, data) {
 	let query = '';
+	// console.log(data, Date.now());
 
 	//Set query based on user types
 	if (data[1] === 'C') {
@@ -185,11 +237,17 @@ async function updateUserLocation(req, res, data) {
 
 		result = await connection.execute(query, {}, { autoCommit: true });
 
-		console.log(`Connected to update user location ${data}`);
+		// console.log(`Connected to update user location ${data}`);
 	} catch (error) {
+		console.log('eror', data);
+		console.log('eror', error.message);
+		res.status(401).send(error.message);
 	} finally {
 		if (connection) {
-			await connection.close();
+			try {
+				await connection.close();
+			} catch (error) {}
+
 			// console.log('Connection ended');
 		}
 		res.status(200).send(result);
@@ -216,12 +274,16 @@ async function getDriversWithinRange(req, res, lat, lng) {
 
 		// console.log('Connected to get drivers within range of the user');
 	} catch (error) {
+		console.log('eror', error.message);
+		res.status(401).send(error.message);
 	} finally {
 		if (connection) {
-			await connection.close();
+			try {
+				await connection.close();
+			} catch (error) {}
 			// console.log('Connection ended');
+			res.status(200).send(result);
 		}
-		res.status(200).send(result);
 	}
 }
 //
@@ -434,6 +496,10 @@ app.post('/updateuserlocation', (req, res) => {
 //Example in ---------> /getdriverlocation/23/90   ......... 23 will be stored in lat and 90 will be stored in lng
 //The variables can be accessed using the req.params.<the variable name> command.
 
+app.get('/getlastlocation/:uid/:type', function (req, res) {
+	getlastlocation(req, res, req.params.uid, req.params.type);
+});
+
 app.get('/getsignindata/:username/:password', (request, response) => {
 	const username = request.params.username;
 	const password = request.params.password;
@@ -444,10 +510,10 @@ app.get('/getsignindata/:username/:password', (request, response) => {
 });
 
 app.get('/getdriverlocation/:lat/:lng', (req, res) => {
-	const lattitude = req.params.lat;
-	const longitude = req.params.lng;
+	const dr_lattitude = req.params.lat;
+	const dr_longitude = req.params.lng;
 
-	getDriversWithinRange(req, res, lattitude, longitude);
+	getDriversWithinRange(req, res, dr_lattitude, dr_longitude);
 });
 
 //GET request for getting driver data
@@ -538,9 +604,9 @@ io.on('connection', (socket) => {
 	});
 	//
 	//
-	socket.on('request', (soket_id, tripdata) => {
-		console.log('Request found from ', soket_id, tripdata);
-		socket.broadcast.emit('request', soket_id, tripdata);
+	socket.on('request', (soket_id, tripdata, usdata) => {
+		console.log('Request found from ', soket_id, tripdata, usdata);
+		socket.broadcast.emit('request', soket_id, tripdata, usdata);
 	});
 	//
 	//

@@ -64,6 +64,23 @@ export default createStore({
 			state.driverArrivalTime = time;
 		},
 
+		//User
+		setURating(state, rating) {
+			state.userRating = rating;
+		},
+		setUPhone(state, phn) {
+			state.userPhoneNo = phn;
+		},
+		setUUID(state, id) {
+			state.userID = id;
+		},
+		setUName(state, nm) {
+			state.userName = nm;
+		},
+		setULocation(state, loc) {
+			state.userLocation = loc;
+		},
+
 		//Trips
 		setTripType(state, tt) {
 			state.tripType = tt;
@@ -97,6 +114,15 @@ export default createStore({
 				state.driverPhoneNo,
 				state.driverLocation,
 				state.driverRating,
+			];
+		},
+		getUData(state) {
+			return [
+				state.userID,
+				state.userName,
+				state.userPhoneNo,
+				state.userLocation,
+				state.userRating,
 			];
 		},
 		getWaitTime(state) {

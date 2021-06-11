@@ -98,13 +98,18 @@
 
 		mounted() {
 			setTimeout(() => {
+				// alert(this.myrating);
 				if (this.type === 'C')
 					this.setUserRating(
-						this.cliverdata.total_rating / this.cliverdata.total_trips
+						this.cliverdata.total_rating === 0
+							? 0
+							: this.cliverdata.total_rating / this.cliverdata.total_trips
 					);
 				else if (this.type === 'D')
 					this.setDRating(
-						this.cliverdata.total_rating / this.cliverdata.total_trips
+						this.cliverdata.total_rating === 0
+							? 0
+							: this.cliverdata.total_rating / this.cliverdata.total_trips
 					);
 			}, 1000);
 		},

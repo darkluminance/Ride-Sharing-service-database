@@ -30,7 +30,7 @@
 	import CubeSpinner from './Animations/CubeSpinner';
 	import { useStore } from 'vuex';
 	export default {
-		props: {},
+		props: { user_id: '' },
 		components: { SquareSpinner, PulseSpinner, CubeSpinner },
 		setup(props, context) {
 			const store = useStore(); //Using vuex store. Same as this.$store
@@ -346,14 +346,25 @@
 				);
 			}
 
+			async function getpreviousLocation() {
+				let fetched = await fetch(
+					`http://localhost:5000/getlastlocation/${props.user_id}/D`
+				);
+				let locdata = await fetched.json();
+
+				startlocation.value = locdata;
+				curlocation.value = locdata;
+			}
+
 			onMounted(() => {
 				spinShape.value = 'square';
 				isLoading.value = true;
 				getMapData();
+				getpreviousLocation();
 				findloc();
-				context.emit('updatelocation', curlocation.value);
+				context.emit('updatelocationd', curlocation.value);
 
-				var timemultiple = 1;
+				// var timemultiple = 1;
 				setInterval(() => {
 					findloc();
 					store.commit('setDLocation', [
@@ -361,13 +372,14 @@
 						curlocation.value[1],
 					]);
 
-					if (timemultiple % 15 == 0) {
+					context.emit('updatelocationd', curlocation.value);
+					/* if (timemultiple % 15 == 0) {
 						context.emit('updatelocation', curlocation.value);
 
 						timemultiple = 1;
 					}
-
-					timemultiple = timemultiple + 1;
+ */
+					// timemultiple = timemultiple + 1;
 				}, 1000);
 			});
 
@@ -396,6 +408,7 @@
 				carmarker,
 				circlelayer,
 				flytolocation,
+				getpreviousLocation,
 			};
 		},
 	};

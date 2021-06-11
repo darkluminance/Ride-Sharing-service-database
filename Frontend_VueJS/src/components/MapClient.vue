@@ -43,7 +43,7 @@
 	import { useStore } from 'vuex';
 
 	export default {
-		props: {},
+		props: { user_id: '' },
 		components: { SquareSpinner, PulseSpinner, CubeSpinner },
 		setup(props, context) {
 			const store = useStore(); //Using vuex store. Same as this.$store
@@ -205,6 +205,8 @@
 				curlocation.value = loca;
 
 				isLocationEnabled = true; //Since we successfully got the location which means location access is on
+
+				if (firsttime) startlocation.value = curlocation.value;
 			}
 
 			//Function to start searching for trips
@@ -220,6 +222,10 @@
 				store.commit('setTripDestination', [
 					targetlocation.value[0],
 					targetlocation.value[1],
+				]);
+				store.commit('setULocation', [
+					startlocation.value[0],
+					startlocation.value[1],
 				]);
 				store.commit('setTripFare', [rfare, rprem]);
 
@@ -251,7 +257,7 @@
 				let sypo = startlocation.value[1];
 
 				clearTheRoute();
-				console.log(x, y);
+				// console.log(x, y);
 
 				setTimeout(() => {
 					gettheroute(x, y, sxpo, sypo, true);
@@ -387,6 +393,12 @@
 							); */
 
 							//Send the start end location names, trip fares to the left panel using emit function of vuejs
+
+							if (
+								startlocation.value[0] === curlocation.value[0] &&
+								startlocation.value[1] === curlocation.value[1]
+							)
+								startlocationname.value = 'Current location';
 							context.emit(
 								'updatestartlocationnamevalue',
 								startlocationname.value,
@@ -508,7 +520,7 @@
 			}
 
 			async function showAllDriversInRange(lat, lng) {
-				// console.log('I am being called');
+				// console.log(lat, lng);
 				let driverLocations = [];
 				let backupmarker;
 				let datalength = 0;
@@ -520,18 +532,57 @@
 				driverMarkers.clearLayers(); //Will make sure, every driver movement is updated
 
 				//Using the FETCH API, tell the backend server to get the list of drivers around the user from the database
-				let fetched = await fetch(
+				let driverlocationfetch = await fetch(
+					`http://localhost:5000/getdriverlocation/${lat}/${lng}`
+				);
+				let fetcheddata = await driverlocationfetch.json();
+
+				// console.log(fetcheddata);
+
+				driverLocations = fetcheddata.rows; //Store the driver locations in the variable
+				if (fetcheddata.rows) datalength = fetcheddata.rows.length;
+				console.log(driverLocations);
+
+				//For every driver location in the array, push its location in the variable
+				try {
+					if (datalength) {
+						mymap.removeLayer(backupmarker);
+						// console.log(backupmarker);
+						for (let index = 0; index < datalength; index++) {
+							var carIcon = new L.Icon({
+								iconUrl: 'https://i.imgur.com/dl2jT16.png',
+								iconSize: [21, 53.5],
+								iconAnchor: [10.5, 26.75],
+							});
+
+							carmarker = L.marker(
+								[driverLocations[index][1], driverLocations[index][2]],
+								{
+									icon: carIcon,
+								}
+							);
+
+							driverMarkers.addLayer(carmarker);
+						}
+						mymap.addLayer(driverMarkers);
+					}
+				} catch (error) {
+					console.log(error, error.message);
+				}
+
+				/* 	let fetched = await fetch(
 					`http://localhost:5000/getdriverlocation/${lat}/${lng}`
 				)
 					.then((res) => res.json()) //Convert the data to JSON format
 					.then((data) => {
 						driverLocations = data.rows; //Store the driver locations in the variable
 						if (data.rows) datalength = data.rows.length;
-						// console.log(driverLocations);
+						console.log(driverLocations);
 
 						//For every driver location in the array, push its location in the variable
 						try {
-							mymap.removeLayer(backupmarker);
+							if (driverLocations) mymap.removeLayer(backupmarker);
+							// console.log(backupmarker);
 							for (let index = 0; index < datalength; index++) {
 								var carIcon = new L.Icon({
 									iconUrl: 'https://i.imgur.com/dl2jT16.png',
@@ -548,15 +599,15 @@
 
 								driverMarkers.addLayer(carmarker);
 							}
-							mymap.addLayer(driverMarkers);
+							if (driverLocations) mymap.addLayer(driverMarkers);
 						} catch (error) {
 							console.log(error, error.message);
 						}
 					})
 					.catch((err) =>
 						console.log(err, 'Error!!!', lat, lng, datalength, driverLocations)
-					);
-
+					); */
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				/* //After 800ms, reset the driver markers and show the updated one
 				setTimeout(() => {
 					// mymap.removeLayer(driverMarkers);
@@ -565,59 +616,75 @@
 				}, 800); */
 			}
 
+			async function getpreviousLocation() {
+				let fetched = await fetch(
+					`http://localhost:5000/getlastlocation/${props.user_id}/C`
+				);
+				let locdata = await fetched.json();
+
+				startlocation.value = locdata;
+				curlocation.value = locdata;
+			}
+
 			//WIll fire when the page loads first
 			onMounted(() => {
 				spinShape.value = 'square';
 				isLoading.value = true;
+				getpreviousLocation();
 				getMapData();
-				var timemultiple = 1; //the location will update not every time but only when the value % 15 = 0
+				// var timemultiple = 1; //the location will update not every time but only when the value % 15 = 0
+				findloc(); //Find the current location
 
 				//Perform updates every 2s
 				setInterval(() => {
 					findloc(); //Find the current location
+					context.emit('updatelocationc', curlocation.value);
 
-					//Update user location to database only after specific period of time
+					// context.emit('updatelocation', curlocation.value);
+
+					/* //Update user location to database only after specific period of time
 					if (timemultiple % 15 == 0) {
 						context.emit('updatelocation', curlocation.value);
 						timemultiple = 1;
 					}
-					timemultiple = timemultiple + 1;
+					timemultiple = timemultiple + 1; */
 
 					setTimeout(() => {
-						//After 800 ms, update the start location
-						setTimeout(() => {
-							if (firsttime) startlocation.value = curlocation.value;
-							/* if (isLocationEnabled && !firsttime) {
-								getstartpositionname(
-									startlocation.value[0],
-									startlocation.value[1]
-								);
-							} */
-						}, 800);
+						// //After 800 ms, update the start location
+						// setTimeout(() => {
+						// 	if (firsttime) startlocation.value = curlocation.value;
+						// 	/* if (isLocationEnabled && !firsttime) {
+						// 		getstartpositionname(
+						// 			startlocation.value[0],
+						// 			startlocation.value[1]
+						// 		);
+						// 	} */
+						// }, 800);
 
 						//After 800 ms, send the location names, fare data to the left panel display
-						setTimeout(() => {
-							if (
-								startlocation.value[0] === curlocation.value[0] &&
-								startlocation.value[1] === curlocation.value[1]
-							)
-								startlocationname.value = 'Current location';
-							context.emit(
-								'updatestartlocationnamevalue',
-								startlocationname.value,
-								targetlocationname.value,
-								rfare,
-								rprem
-							);
 
-							if (firsttime && isLocationEnabled) {
-								firsttime = false; //If it was user's first time, achievement unlocked so don't do some stuffs next time
-							}
+						// setTimeout(() => {
+						// if (
+						// 	startlocation.value[0] === curlocation.value[0] &&
+						// 	startlocation.value[1] === curlocation.value[1]
+						// )
+						// 	startlocationname.value = 'Current location';
+						// context.emit(
+						// 	'updatestartlocationnamevalue',
+						// 	startlocationname.value,
+						// 	targetlocationname.value,
+						// 	rfare,
+						// 	rprem
+						// );
 
+						if (firsttime && isLocationEnabled) {
+							firsttime = false; //If it was user's first time, achievement unlocked so don't do some stuffs next time
+						}
+						if (isLocationEnabled)
 							showAllDriversInRange(curlocation.value[0], curlocation.value[1]);
-						}, 800);
+						// }, 800);
 					}, 800);
-				}, 2000);
+				}, 1000);
 			});
 
 			//Sets up all the variables for other parts of the file or other files to access
@@ -651,6 +718,7 @@
 				isTripFound,
 				searchForTrips,
 				tripFoundTrue,
+				getpreviousLocation,
 			};
 		},
 	};

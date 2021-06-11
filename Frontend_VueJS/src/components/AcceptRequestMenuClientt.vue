@@ -7,18 +7,18 @@
 			<img src="/assets\settings.png" alt="" srcset="" id="settingsicon" />
 		</div>
 
-		<div class="driverprofile">
+		<div class="userprofilehehe">
 			<div class="profilecircle"><i class="fas fa-user"></i></div>
 			<div class="driverinfo">
-				<h2>{{ drivername }}</h2>
-				<h3><i class="fas fa-star"></i> {{ driverrating }}</h3>
+				<h2>{{ userdata[1] }}</h2>
+				<h3><i class="fas fa-star"></i> {{ userdata[4] }}</h3>
 			</div>
-			<p>{{ driverphone }}</p>
+			<p>{{ userdata[2] }}</p>
 		</div>
 
 		<div class="tripdetail">
-			<h4>Pickup: {{ trippickup.toFixed(3) }}</h4>
-			<h4>Destination: {{ tripdestination.toFixed(3) }}</h4>
+			<h4>Pickup: {{ userdata[3][0].toFixed(3) }}</h4>
+			<h4>Destination: {{ userdata[3][1].toFixed(3) }}</h4>
 		</div>
 
 		<!-- Button container -->
@@ -37,11 +37,6 @@
 		props: {},
 		data() {
 			return {
-				drivername: 'Robert Downey',
-				driverrating: 5,
-				driverphone: '01232432432',
-				driverarrivaltime: 0,
-
 				trippickup: 'Sector 6, Uttara',
 				tripdestination: 'BUET',
 				tripfare: 420,
@@ -69,22 +64,6 @@
 				'tripType',
 				'tripFare',
 			]),
-			userdata() {
-				return this.$store.getters.getUData;
-			},
-			drivername() {
-				return this.driverName;
-			},
-			driverrating() {
-				return this.driverRating;
-			},
-			driverphone() {
-				return this.driverPhoneNo;
-			},
-			driverarrivaltime() {
-				return this.driverArrivalTime;
-			},
-
 			trippickup() {
 				return this.pickupCoords;
 			},
@@ -100,6 +79,10 @@
 		},
 		methods: {
 			...mapMutations(['setTripType']),
+		},
+
+		mounted() {
+			this.userdata = this.$store.getters.getUData;
 		},
 	};
 </script>
@@ -173,7 +156,7 @@
 		transform: translateX(-50%);
 	}
 
-	.driverprofile {
+	.userprofilehehe {
 		margin: 3rem;
 	}
 
