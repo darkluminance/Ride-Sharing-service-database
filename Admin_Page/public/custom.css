@@ -1,0 +1,28 @@
+.navbar{
+    background-color: cadetblue;
+}
+.table-ref{
+    min-width:400px;
+    max-width:1000px;
+    font-size: 14px;
+    font-family:sans-serif;
+}
+
+.table-ref-data{
+    border-collapse: collapse;
+    width: 100%;
+    box-shadow: 0 0 5px rgba(108, 92, 231);
+    border-bottom:3px solid rgb(108, 92, 231);
+}
+
+.table-ref-data thead tr {
+    background:rgb(108, 92, 231);
+    color:white;
+}
+
+.table-ref-data th,
+.table-ref-data td{
+    text-align: left;
+    padding: 9px;
+    font-weight: normal;
+}

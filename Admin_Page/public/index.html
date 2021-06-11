@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  
+  <style>
+    /* .container-demo{
+          
+          background-color: white;
+    } */
+    .bg-light1{
+      background-color: #6c5ce7;
+    }
+    .font-clr{
+      color: #e1d2f0;
+    }
+    .table-ref{
+    min-width:900px;
+    max-width:1000px;
+    font-size: 14px;
+    font-family:sans-serif;
+}
+
+.table-ref-data{
+    border-collapse: collapse;
+    width: 100%;
+    /* box-shadow: 0 0 5px rgba(108, 92, 231); */
+    border-bottom:3px solid rgb(108, 92, 231);
+}
+
+.table-ref-data thead tr {
+    background:rgb(108, 92, 231);
+    color:#ffffff;
+}
+
+.table-ref-data th,
+.table-ref-data td{
+    text-align: left;
+    padding: 9px;
+    font-weight: normal;
+}
+.table-ref-data tbody tr:nth-of-type(even){
+  background: #f1ebeb;
+}
+  </style>
+  <script src="indexAdmin.js"></script>
+</head>
+<body>
+  <!---------------NAVBAR------------>
+  <!-- Just an image -->
+<nav class="navbar fixed-top navbar-light bg-dark">
+  <a class="navbar-brand justify-content-center" href="#">
+    <img src="logos/uberlogo.png" width="160" height="50" alt="">
+  </a>
+</nav>
+<div class="container-demo">
+  <div class="row">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit similique labore doloribus, dolores minus non vero distinctio possimus modi natus itaque iure dolore qui architecto exercitationem neque quas fugiat quibusdam?</p>
+
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light1 sidebar collapse">
+      <div class="sidebar-sticky pt-3 ">
+        <ul class="nav flex-column">
+          
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <h5 id="haga">User Table</h5>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p >select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+             <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link font-clr" href="#">
+              <p>select * from users</p>
+            </a>
+          </li>
+        </ul>
+
+        
+        
+      </div>
+    </nav>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+      
+
+      <h2 class="pt-3">Users Information</h2>
+      <div class="table-ref" data-url='/data'></div>
+        <!-- <table class="table-ref-data">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>agr</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+               <td>mappy</td>
+               <td>20</td>
+            </tr>
+            <tr>
+               <td>mappy</td>
+               <td>20</td>
+            </tr>
+            <tr>
+               <td>mappy</td>
+               <td>20</td>
+            </tr>
+          </tbody>
+        </table> -->
+    </main>
+  </div>
+</div>
+
+  </nav>
+
+  <script>
+    // getUserData();
+    // async function getUserData(){
+    //   const response=await fetch('http://localhost:5000/Userdata');
+    //   const data=await response.json();
+    //   console.log(data);
+
+    //   const rows=data.split('\n');
+    //   console.log(rows);
+    // }
+  </script>
+  <script src="indexAdmin.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+</body>
+</html>
