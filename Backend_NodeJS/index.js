@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'ryoko',
-	password: 'ryoko',
+	user: 'talkinghead',
+	password: 'talk',
 	connectString: 'localhost/xe',
 };
 
@@ -312,21 +312,34 @@ async function UserClient(req, res, data) {
 
 //Create account for the driver
 async function UserDriver(req, res, data, info) {
-	const query = `insert into userr (u_id, user_name, admin_id, Name_Fname, Name_Lname, passwordd, dob,age, Phone_No, user_typ) 
-					values('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4]}','${data[5]}',to_date('${data[6]}','yyyy-mm-dd'), TRUNC(TO_NUMBER(SYSDATE - TO_DATE('${data[6]}','yyyy-mm-dd')) / 365.25), '${data[7]}','${data[8]}')`;
+	const query = ` BEGIN
+					SAVEPOINT start_point;
 
-	const query1 = `update driver
-					set NID = '${info[1]}',
-					COID = '${info[2]}',
-					Car_ID = '${info[3]}'
-					where U_ID ='${info[0]}'`;
+						insert into userr (u_id, user_name, admin_id, Name_Fname, Name_Lname, passwordd, dob,age, Phone_No, user_typ) 
+						values('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4]}','${data[5]}',to_date('${data[6]}','yyyy-mm-dd'), TRUNC(TO_NUMBER(SYSDATE - TO_DATE('${data[6]}','yyyy-mm-dd')) / 365.25), '${data[7]}','${data[8]}');
+						
+						update driver
+						set NID = '${info[1]}',
+						COID = '${info[2]}',
+						Car_ID = '${info[3]}'
+						where U_ID ='${info[0]}';
+					EXCEPTION
+					WHEN OTHERS THEN
+					ROLLBACK TO start_point;
+					END;`;
+
+	// const query1 = `update driver
+	// 				set NID = '${info[1]}',
+	// 				COID = '${info[2]}',
+	// 				Car_ID = '${info[3]}'
+	// 				where U_ID ='${info[0]}'`;
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
 		console.log('Connected');
 
 		result = await connection.execute(query, {}, { autoCommit: true });
-		result1 = await connection.execute(query1, {}, { autoCommit: true });
+		// result1 = await connection.execute(query1, {}, { autoCommit: true });
 	} catch (error) {
 	} finally {
 		if (connection) {
@@ -489,6 +502,68 @@ app.post('/updateuserlocation', (req, res) => {
 
 	updateUserLocation(req, res, senddata);
 });
+
+
+async function sendTripData(req, res, data) {
+
+	const query = `BEGIN
+						SAVEPOINT start_point;
+						insert into Trip(Trip_ID,Start_Time,End_time,Fare_Init_amnt,Fare_amnt,Pick_up_X,Pick_up_Y,Drop_off_X,Drop_off_Y,CL_Rating,Dr_Rating,Trip_date ,CLU_ID,DRU_ID)
+						values('${data[0]}',to_date('${data[1]}','yyyy-mm-dd'),to_date('${data[2]}','yyyy-mm-dd'),${data[3]},${data[4]},${data[5]},${data[6]},${data[7]},'${data[8]},${data[9]},${data[10]},to_date('${data[11]}','yyyy-mm-dd'),'${data[12]}','${data[13]}');
+						
+						update cliver
+						set total_trips= total_trips+1
+						where U_ID = '1623089940354' or U_ID = '39324234';
+					EXCEPTION
+						WHEN OTHERS THEN
+						ROLLBACK TO start_point;
+					END;`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+
+		result = await connection.execute(query, {}, { autoCommit: true });
+
+		console.log('Connected to insert user data');
+	} catch (error) {
+	} finally {
+		if (connection) {
+			await connection.close();
+			console.log('Connection ended');
+		}
+		res.status(200).send(result);
+	}
+}
+app.post('/trip', (req, res) => {
+	data = req.body;
+
+	//Format the obtained data into separate values and form an array with it
+	const tripid = data.trip_id;
+	const startime = data.start_time;
+	const endtime = data.end_time;
+	const fareinit = data.fare_init;
+	const fareamount = data.fare_amnt;
+	const pickX = data.pick_up_x;
+	const pickY = data.pick_up_y;
+	const dropoffX = data.drop_off_x;
+	const dropoffY = data.drop_off_y;
+	const clrating = data.cl_rating;
+	const drrating = data.dr_rating;
+	const tripdate = data.trip_date;
+	const cluid = data.clu_id;
+	const drid = data.dr_id;
+
+
+	const senddata = [trip_id, start_time, end_time, fare_init, fare_amnt,
+		 pick_up_x, pick_up_y, drop_off_x, drop_off_y, cl_rating, dr_rating,
+		 trip_date,clu_id,dr_id];
+
+	sendTripData(req, res, senddata);
+});
+
+
+
+
 //
 //
 //
