@@ -42,7 +42,7 @@
 		computed: {
 			myrating() {
 				return this.clivdata.total_rating === 0
-					? 0
+					? 5
 					: this.clivdata.total_rating / this.clivdata.total_trips;
 			},
 		},

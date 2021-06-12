@@ -168,6 +168,7 @@
 			}
 			function showError(error) {
 				console.log(error.message);
+				alert('Please enable your location access');
 				isLocationEnabled = false;
 			}
 			function setthepos(loca) {
@@ -541,7 +542,7 @@
 
 				driverLocations = fetcheddata.rows; //Store the driver locations in the variable
 				if (fetcheddata.rows) datalength = fetcheddata.rows.length;
-				console.log(driverLocations);
+				// console.log(driverLocations);
 
 				//For every driver location in the array, push its location in the variable
 				try {

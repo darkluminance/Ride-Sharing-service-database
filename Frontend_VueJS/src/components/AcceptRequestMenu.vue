@@ -16,10 +16,10 @@
 			<p>{{ driverphone }}</p>
 		</div>
 
-		<div class="tripdetail">
+		<!-- <div class="tripdetail">
 			<h4>Pickup: {{ trippickup.toFixed(3) }}</h4>
 			<h4>Destination: {{ tripdestination.toFixed(3) }}</h4>
-		</div>
+		</div> -->
 
 		<!-- Button container -->
 		<div class="buttons">
@@ -106,7 +106,7 @@
 
 <style scoped>
 	.menu {
-		width: 24vw;
+		width: 25vw;
 		height: 100vh;
 		margin: 0;
 		float: left;

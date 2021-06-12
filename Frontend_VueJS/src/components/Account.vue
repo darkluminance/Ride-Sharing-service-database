@@ -61,7 +61,12 @@
 			></TripRequest>
 		</div>
 
-		<AcceptRequestMenuClientt v-if="isTripAccepted" @cancelTrip="canceltrip">
+		<AcceptRequestMenuClientt
+			v-if="isTripAccepted"
+			@cancelTrip="canceltrip"
+			@startTrip="startTrip"
+			@finishTrip="finishTrip"
+		>
 		</AcceptRequestMenuClientt>
 	</div>
 
@@ -155,8 +160,8 @@
 
 			socket.on('accepted', (data, ddata) => {
 				if (this.userdata.type === 'C' && !this.isTripAccepted) {
-					console.log('Accepted yeaaa');
-					console.log(data, ddata);
+					/* console.log('Accepted yeaaa');
+					console.log(data, ddata); */
 					this.isTripAccepted = true;
 
 					this.$store.commit('setDID', ddata[0]);
@@ -171,13 +176,27 @@
 				this.accepted = true; */
 			});
 
+			socket.on('tripstart', (sockid) => {
+				this.$refs.mapComponent.clearTheRoute();
+				this.$store.commit('setontrip', true);
+				this.$refs.mapComponent.gettheroute(
+					this.$store.state.destination[0],
+					this.$store.state.destination[1]
+				);
+			});
+
+			socket.on('finishtrip', (sockid) => {
+				this.$refs.mapComponent.clearTheRoute();
+				this.$store.commit('setontrip', false);
+			});
+
 			socket.on('request', (socketid, tdata, udata) => {
 				if (this.userdata.type === 'D' && !this.foundreq) {
-					console.log('wtf is wrong with you', udata);
+					// console.log('wtf is wrong with you', udata);
 					this.foundreq = true;
 					this.socketid_of_requester = socketid;
 					this.tripdetails = tdata;
-					console.log('The user bitch is at ', tdata[0]);
+					// console.log('The user bitch is at ', tdata[0]);
 					this.$refs.dmapComponent.gettheroute(tdata[0][0], tdata[0][1]);
 					this.$store.commit('setTripType', tdata[2]);
 					this.$store.commit('setRating', tdata[1]);
@@ -190,11 +209,11 @@
 					this.$store.commit('setULocation', udata[3]);
 					this.$store.commit('setURating', udata[4]);
 
-					console.log(
+					/* console.log(
 						this.socketid_of_requester,
 						' Got request ',
 						this.tripdetails
-					);
+					); */
 
 					setTimeout(() => {
 						if (!this.isTripAccepted) {
@@ -261,7 +280,25 @@
 				else if (this.userdata.type === 'C')
 					this.$refs.mapComponent.clearTheRoute();
 
+				this.$store.commit('setontrip', false);
+
 				socket.emit('cancelled', this.socketid_of_requester);
+			},
+
+			startTrip() {
+				this.$refs.dmapComponent.clearTheRoute();
+				this.$refs.dmapComponent.gettheroute(
+					this.$store.state.destination[0],
+					this.$store.state.destination[1]
+				);
+				this.$store.commit('setontrip', true);
+				socket.emit('tripstart', this.socketid_of_requester);
+			},
+
+			finishTrip() {
+				this.$refs.dmapComponent.clearTheRoute();
+				this.$store.commit('setontrip', false);
+				socket.emit('finishtrip', this.socketid_of_requester);
 			},
 
 			getname(value, value2, f1, f2) {
@@ -293,6 +330,7 @@
 					.catch((err) => {
 						console.log(err, 'Error!!!');
 						alert('Sorry could not find user. Try again');
+						localStorage.removeItem('token');
 						location.reload();
 					});
 			},
@@ -352,7 +390,12 @@
 						};
 						console.log(this.cliverdata);
 					})
-					.catch((err) => console.log(err, 'Error!!!'));
+					.catch((err) => {
+						console.log(err, 'Error!!!');
+						alert('Sorry could not sign you in. Please try to login again');
+						localStorage.removeItem('token');
+						location.reload();
+					});
 
 				/* setTimeout(() => {
 					this.cliverdata = {
@@ -379,7 +422,12 @@
 						};
 						console.log('Driver', this.driverdata);
 					})
-					.catch((err) => console.log(err, 'Error!!!'));
+					.catch((err) => {
+						console.log(err, 'Error!!!');
+						alert('Sorry could not sign you in. Please try to login again');
+						localStorage.removeItem('token');
+						location.reload();
+					});
 
 				/* setTimeout(() => {
 					this.deepcliverdata = {
@@ -413,7 +461,12 @@
 						//Data is loaded
 						this.loaded = true;
 					})
-					.catch((err) => console.log(err, 'Error!!!'));
+					.catch((err) => {
+						console.log(err, 'Error!!!');
+						alert('Sorry could not sign you in. Please try to login again');
+						localStorage.removeItem('token');
+						location.reload();
+					});
 
 				/* setTimeout(() => {
 					this.userdata = {

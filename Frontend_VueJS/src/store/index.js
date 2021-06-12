@@ -9,14 +9,14 @@ export default createStore({
 		isAuthenticated: false,
 
 		//UserInfo
-		userRating: 0.0,
+		userRating: 5,
 		userLocation: [0, 0],
 		userName: '',
 		userPhoneNo: '',
 		userID: '',
 
 		//Driver info
-		driverRating: 0.0,
+		driverRating: 5,
 		driverLocation: [0, 0],
 		driverName: '',
 		driverPhoneNo: '',
@@ -28,6 +28,8 @@ export default createStore({
 		destination: [0, 0],
 		tripType: '',
 		tripFare: 0,
+
+		amIontrip: false,
 	},
 	mutations: {
 		setRequestGoTime(state, gotime) {
@@ -93,6 +95,9 @@ export default createStore({
 		},
 		setTripFare(state, fare) {
 			state.tripfare = fare;
+		},
+		setontrip(state, bool) {
+			state.amIontrip = bool;
 		},
 	},
 	actions: {},

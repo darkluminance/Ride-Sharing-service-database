@@ -621,4 +621,10 @@ io.on('connection', (socket) => {
 	//
 	//
 	//
+	socket.on('tripstart', (socet_id) => {
+		socket.broadcast.emit('tripstart', socet_id);
+	});
+	//
+	//
+	//
 });

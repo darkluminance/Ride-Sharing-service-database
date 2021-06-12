@@ -16,16 +16,23 @@
 			<p>{{ userdata[2] }}</p>
 		</div>
 
-		<div class="tripdetail">
+		<!-- <div class="tripdetail">
 			<h4>Pickup: {{ userdata[3][0].toFixed(3) }}</h4>
 			<h4>Destination: {{ userdata[3][1].toFixed(3) }}</h4>
-		</div>
+		</div> -->
 
 		<!-- Button container -->
 		<div class="buttons">
 			<button style="background: #6c5ce7" @click="$emit('cancelTrip')">
 				Cancel Trip
 			</button>
+
+			<div class="driverbtn">
+				<button v-if="$store.state.amIonTrip" @click="$emit('startTrip')">
+					START
+				</button>
+				<button v-else @click="$emit('finishTrip')">FINISH</button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -89,7 +96,7 @@
 
 <style scoped>
 	.menu {
-		width: 24vw;
+		width: 25vw;
 		height: 100vh;
 		margin: 0;
 		float: left;
@@ -165,5 +172,29 @@
 		margin-left: 20%;
 		margin-top: 20%;
 		margin-bottom: 20%;
+	}
+
+	.buttons .driverbtn {
+		margin-top: 6em;
+	}
+
+	.driverbtn button {
+		border: none;
+		box-shadow: 0 0 0 5px rgb(28, 28, 28), 0 0 0 8px #a29bfe;
+		border-radius: 50%;
+		width: 100px;
+		height: 100px;
+		background: #6c5ce7;
+		color: #eee;
+		padding: 0;
+		font-size: 1.3rem;
+		font-weight: bold;
+		cursor: pointer;
+		position: relative;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	.driverbtn button:hover {
+		opacity: 0.69;
 	}
 </style>
