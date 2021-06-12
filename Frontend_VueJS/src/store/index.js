@@ -27,7 +27,7 @@ export default createStore({
 		pickupLocation: [0, 0],
 		destination: [0, 0],
 		tripType: '',
-		tripFare: 0,
+		tripFare: [0, 0],
 
 		amIontrip: false,
 	},
@@ -93,8 +93,8 @@ export default createStore({
 		setTripDestination(state, destination) {
 			state.destination = destination;
 		},
-		setTripFare(state, fare) {
-			state.tripfare = fare;
+		setTripFare(state, fares, farep) {
+			state.tripFare = [fares, farep];
 		},
 		setontrip(state, bool) {
 			state.amIontrip = bool;

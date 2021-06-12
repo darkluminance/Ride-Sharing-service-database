@@ -84,7 +84,7 @@
 						tileSize: 512,
 						zoomOffset: -1,
 						accessToken:
-							'pk.eyJ1IjoiZGFya2x1bWluYW5jZSIsImEiOiJja29zcGJrdDIwM291Mm9xanczMnRtNWc1In0.4y8psgTFHMCq2CR0A6AszQ',
+							'pk.eyJ1IjoiZGFya2x1bWluYW5jZSIsImEiOiJja3B0bmdodXQwc2swMnFwOHg0cnNsdHJoIn0.EBXOdyWxjG2OPtO3d2hbRw',
 					}
 				).addTo(mymap); //Add the tilelayer to the map variable
 
@@ -228,7 +228,6 @@
 					startlocation.value[0],
 					startlocation.value[1],
 				]);
-				store.commit('setTripFare', [rfare, rprem]);
 
 				spinShape.value = 'pulse';
 				isLoading.value = true; //Animate 'Searching for trips'
@@ -681,7 +680,7 @@
 						if (firsttime && isLocationEnabled) {
 							firsttime = false; //If it was user's first time, achievement unlocked so don't do some stuffs next time
 						}
-						if (isLocationEnabled)
+						if (isLocationEnabled && !store.state.amIontrip)
 							showAllDriversInRange(curlocation.value[0], curlocation.value[1]);
 						// }, 800);
 					}, 800);

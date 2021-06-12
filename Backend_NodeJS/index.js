@@ -262,7 +262,7 @@ async function updateUserLocation(req, res, data) {
 async function getDriversWithinRange(req, res, lat, lng) {
 	const query = `Select D.U_ID, D.Dr_Location_X, D.Dr_Location_Y
 	From driver D 
-	Where 3963.0 * acos((sin(${lng}/ 57.29577951) * sin(D.Dr_Location_Y/ 57.29577951)) + cos(${lng}/ 57.29577951) * cos(D.Dr_Location_Y/ 57.29577951) * cos((D.Dr_Location_X/ 57.29577951) - (${lat}/ 57.29577951))) <= 1`;
+	Where 3963.0 * acos(round((sin(${lng}/ 57.29577951) * sin(D.Dr_Location_Y/ 57.29577951))) + round(cos(${lng}/ 57.29577951) * cos(D.Dr_Location_Y/ 57.29577951) * cos((D.Dr_Location_X/ 57.29577951) - (${lat}/ 57.29577951)))) <= 0.5`;
 	//The above formula checks whether the geographical distance between user and location of any driver belongs to the range
 
 	// console.log(query);
@@ -280,9 +280,12 @@ async function getDriversWithinRange(req, res, lat, lng) {
 		if (connection) {
 			try {
 				await connection.close();
-			} catch (error) {}
+				res.status(200).send(result);
+			} catch (error) {
+				console.log(error.message);
+				res.status(401).send(error.message);
+			}
 			// console.log('Connection ended');
-			res.status(200).send(result);
 		}
 	}
 }
@@ -623,6 +626,12 @@ io.on('connection', (socket) => {
 	//
 	socket.on('tripstart', (socet_id) => {
 		socket.broadcast.emit('tripstart', socet_id);
+	});
+	//
+	//
+	//
+	socket.on('finishtrip', (socet_id) => {
+		socket.broadcast.emit('finishtrip', socet_id);
 	});
 	//
 	//

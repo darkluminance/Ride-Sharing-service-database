@@ -121,9 +121,12 @@
 			},
 
 			emitLookTrip() {
+				this.$store.commit('setTripFare', this.sp, this.pp);
+				// console.log(this.$store.state.tripFare);
 				this.$emit('lookTrip');
 			},
 		},
+		mounted() {},
 	};
 </script>
 

@@ -28,10 +28,17 @@
 			</button>
 
 			<div class="driverbtn">
-				<button v-if="$store.state.amIonTrip" @click="$emit('startTrip')">
-					START
-				</button>
-				<button v-else @click="$emit('finishTrip')">FINISH</button>
+				<div v-if="!istrip">
+					<button @click="$emit('startTrip')">
+						START
+					</button>
+				</div>
+
+				<div v-if="istrip">
+					<button @click="$emit('finishTrip')">
+						FINISH
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -50,6 +57,8 @@
 				triptype: 'Standard',
 
 				userdata: [],
+
+				istrip: false,
 			};
 		},
 
@@ -70,6 +79,7 @@
 				'destination',
 				'tripType',
 				'tripFare',
+				'amIontrip',
 			]),
 			trippickup() {
 				return this.pickupCoords;
@@ -82,6 +92,10 @@
 			},
 			triptype() {
 				return this.tripType;
+			},
+			istrip() {
+				// console.log('now the trip status is ', this.amIontrip);
+				return this.amIontrip;
 			},
 		},
 		methods: {

@@ -163,8 +163,9 @@
 					/* console.log('Accepted yeaaa');
 					console.log(data, ddata); */
 					this.isTripAccepted = true;
+					console.log('Accepted yeaa ', this.$store.state.tripFare);
 
-					this.$store.commit('setDID', ddata[0]);
+					this.$store.commit('setDUID', ddata[0]);
 					this.$store.commit('setDRating', ddata[4]);
 					this.$store.commit('setDPhone', ddata[2]);
 					this.$store.commit('setDName', ddata[1]);
@@ -186,6 +187,19 @@
 			});
 
 			socket.on('finishtrip', (sockid) => {
+				console.log(
+					'The trip fare is: ',
+					this.$store.state.tripfare,
+					this.rfare,
+					this.rprem,
+					this.tripdetails
+				);
+				this.isTripAccepted = false;
+				this.socketid_of_requester = '';
+				this.tripdetails = null;
+				this.foundreq = false;
+				this.isRouteSearching = false;
+
 				this.$refs.mapComponent.clearTheRoute();
 				this.$store.commit('setontrip', false);
 			});
@@ -202,6 +216,7 @@
 					this.$store.commit('setRating', tdata[1]);
 					this.$store.commit('setTrippickup', tdata[0]);
 					this.$store.commit('setTripDestination', tdata[3]);
+					console.log('The tripfare will be , ', tdata[4]);
 					this.$store.commit('setTripFare', tdata[4]);
 					this.$store.commit('setUUID', udata[0]);
 					this.$store.commit('setUName', udata[1]);
@@ -235,7 +250,7 @@
 			...mapGetters['getDData'],
 
 			sendrequest() {
-				let tripdetails = this.$store.getters.getTripDetails;
+				let tripdetailsss = this.$store.getters.getTripDetails;
 
 				this.$store.commit('setUName', this.userdata.name);
 				this.$store.commit('setUPhone', this.userdata.phone);
@@ -243,7 +258,7 @@
 
 				let userdetails = this.$store.getters.getUData;
 				// console.log(tripdetails);
-				socket.emit('request', socket.id, tripdetails, userdetails);
+				socket.emit('request', socket.id, tripdetailsss, userdetails);
 			},
 
 			acceptrequest() {
@@ -296,6 +311,23 @@
 			},
 
 			finishTrip() {
+				let setoffares = this.$store.state.tripFare[0];
+				// console.log('The trip fare is: ', setoffares[0], setoffares[1]);
+				let thefare = 0;
+
+				if (!setoffares[1]) thefare = setoffares[0];
+				else thefare = setoffares[1];
+				console.log(this.tripdetails);
+				console.log(this.$store.state.userID);
+				console.log(this.$store.state.driverID);
+
+				alert(`The trip fare is: Tk. ${thefare}`);
+				this.isTripAccepted = false;
+				this.socketid_of_requester = '';
+				this.tripdetails = null;
+				this.foundreq = false;
+				this.isRouteSearching = false;
+
 				this.$refs.dmapComponent.clearTheRoute();
 				this.$store.commit('setontrip', false);
 				socket.emit('finishtrip', this.socketid_of_requester);
