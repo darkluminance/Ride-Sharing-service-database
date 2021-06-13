@@ -69,7 +69,7 @@
 						tileSize: 512,
 						zoomOffset: -1,
 						accessToken:
-							'pk.eyJ1IjoiZGFya2x1bWluYW5jZSIsImEiOiJja29zcGJrdDIwM291Mm9xanczMnRtNWc1In0.4y8psgTFHMCq2CR0A6AszQ',
+							'pk.eyJ1IjoiZGFya2x1bWluYW5jZSIsImEiOiJja3B0bmdodXQwc2swMnFwOHg0cnNsdHJoIn0.EBXOdyWxjG2OPtO3d2hbRw',
 					}
 				).addTo(mymap);
 
@@ -273,6 +273,7 @@
 
 					getstartpositionname(startlocation.value[0], startlocation.value[1]);
 					startlocationname.value = 'Current location';
+
 					targetlocationname.value = '';
 
 					context.emit(
@@ -301,19 +302,20 @@
 							console.log(err);
 						} else {
 							//console.log(data.results[0]);
-							console.log(
-								data.results[0].components.house_number +
-									' ' +
-									data.results[0].components.road +
-									' ' +
-									data.results[0].components.residential +
-									' ' +
-									data.results[0].components.suburb +
-									' ' +
-									data.results[0].components.city
-							);
-							targetlocationname.value = data.results[0].formatted;
-							// console.log(data.results[0]);
+							// console.log(
+							// 	data.results[0].components.house_number +
+							// 		' ' +
+							// 		data.results[0].components.road +
+							// 		' ' +
+							// 		data.results[0].components.residential +
+							// 		' ' +
+							// 		data.results[0].components.suburb +
+							// 		' ' +
+							// 		data.results[0].components.city
+							// );
+							let locname = data.results[0].formatted;
+							locname = locname.replace(/unnamed road, /g, '');
+							targetlocationname.value = locname;
 						}
 					})
 				);
@@ -340,7 +342,9 @@
 						if (err) {
 							console.log(err);
 						} else {
-							startlocationname.value = data.results[0].formatted;
+							let locname = data.results[0].formatted;
+							locname = locname.replace(/unnamed road, /g, '');
+							startlocationname.value = locname;
 						}
 					})
 				);

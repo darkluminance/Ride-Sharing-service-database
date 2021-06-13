@@ -12,7 +12,7 @@
 			<div>
 				<h1>{{ udata.name }}</h1>
 				<h2>
-					{{ myrating }}
+					{{ myrating.toFixed(1) }}
 					<i class="fas fa-star" style="font-size:1rem;"></i>
 				</h2>
 				<p>{{ udata.phone }}</p>

@@ -136,6 +136,7 @@
 					} else {
 						let pointlocc = [e.latlng.lat, e.latlng.lng];
 						targetlocation.value = pointlocc;
+						getpositionname(e.latlng.lat, e.latlng.lng);
 						firstClick = true; //Destination is set which means user can set start location now
 					}
 					if (firstClick)
@@ -346,6 +347,8 @@
 
 						routedist = summary.totalDistance;
 						routedtime = summary.totalTime;
+						store.commit('setTripDuration', routedtime / 60);
+
 						var basefare = 40;
 						var basefareprem = 80;
 						var costperminute = 3;
@@ -394,6 +397,8 @@
 
 							//Send the start end location names, trip fares to the left panel using emit function of vuejs
 
+							store.commit('setTripPickupName', startlocationname.value);
+							store.commit('setTripDestinationName', targetlocationname.value);
 							if (
 								startlocation.value[0] === curlocation.value[0] &&
 								startlocation.value[1] === curlocation.value[1]
@@ -439,6 +444,7 @@
 					startlocation.value = curlocation.value;
 
 					getstartpositionname(startlocation.value[0], startlocation.value[1]);
+					store.commit('setTripPickupName', startlocationname.value);
 					startlocationname.value = 'Current location';
 					targetlocationname.value = '';
 
@@ -465,9 +471,13 @@
 				await new Promise(() =>
 					geocoding(config, function(err, data) {
 						if (err) {
-							// console.log(err);
+							console.log(err);
 							//If for some reason, unable to get the location name, just use the coords instead as name
 							targetlocationname.value = `${x.toFixed(5)}, ${y.toFixed(5)}`;
+							store.commit(
+								'setTripDestinationName',
+								`${x.toFixed(5)}, ${y.toFixed(5)}`
+							);
 						} else {
 							//console.log(data.results[0]);
 							/* console.log(
@@ -481,7 +491,10 @@
 									' ' +
 									data.results[0].components.city
 							); */
-							targetlocationname.value = data.results[0].formatted;
+							let locname = data.results[0].formatted;
+							locname = locname.replace(/unnamed road, /g, '');
+							targetlocationname.value = locname;
+							store.commit('setTripDestinationName', locname);
 							// console.log(data.results[0]);
 						}
 					})
@@ -504,8 +517,15 @@
 							//console.log(err);
 							//If for some reason, unable to get the location name, just use the coords instead as name
 							startlocationname.value = `${x.toFixed(5)}, ${y.toFixed(5)}`;
+							store.commit(
+								'setTripPickupName',
+								`${x.toFixed(5)}, ${y.toFixed(5)}`
+							);
 						} else {
-							startlocationname.value = data.results[0].formatted;
+							let locname = data.results[0].formatted;
+							locname = locname.replace(/unnamed road, /g, '');
+							startlocationname.value = locname;
+							store.commit('setTripPickupName', locname);
 						}
 					})
 				);

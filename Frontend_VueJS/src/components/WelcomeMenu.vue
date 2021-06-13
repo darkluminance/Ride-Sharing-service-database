@@ -17,7 +17,7 @@
 		<div class="profile">
 			<div class="profilerating">
 				<h1>
-					{{ myrating }}
+					{{ myrating.toFixed(1) }}
 				</h1>
 			</div>
 			<div class="profilename">
