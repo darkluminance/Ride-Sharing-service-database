@@ -8,6 +8,7 @@ import LoginPage from './components/Loginform.vue';
 
 const routes = [
 	{
+
 		path: '/',
 		name: 'LoginPage',
 		component: () => {
@@ -30,7 +31,7 @@ const routes = [
 		},
 	},
 ];
-
+//router ekta object
 const router = createRouter({
 	history: createWebHistory(),
 	routes,

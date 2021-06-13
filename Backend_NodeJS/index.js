@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'ryoko',
-	password: 'ryoko',
+	user: 'talkinghead',
+	password: 'talk',
 	connectString: 'localhost/xe',
 };
 
@@ -593,6 +593,85 @@ app.post('/trip', (req, res) => {
 	console.log(senddata);
 	//res.send(senddata);
 	sendTripData(req, res, senddata);
+});
+
+
+
+
+async function UpdateTrip(req, res, data) {
+	const query1 = `BEGIN
+						SAVEPOINT start_point;
+						update cliver
+						set total_rating = total_rating+ ${data[3]}
+						where U_ID = '${data[0]}';
+					
+						update trip
+						set CL_Rating=  ${data[3]}
+						where trip_id =' ${data[2]}';
+					EXCEPTION
+						WHEN OTHERS THEN
+						ROLLBACK TO start_point;
+					END;`;
+	const query2 =  `BEGIN
+						SAVEPOINT start_point;
+						update cliver
+						set total_rating = total_rating+ ${data[3]}
+						where U_ID = '${data[1]}';
+
+						update trip
+						set dr_Rating=  ${data[3]}
+						where trip_id =' ${data[2]}';
+					EXCEPTION
+						WHEN OTHERS THEN
+						ROLLBACK TO start_point;
+					END;`;
+
+	var query = '';
+	
+	if(data[4]==='C')
+	{
+		query = query1;
+	}
+	else if (data[4]==='D')
+	{
+		query = query2;
+	}
+
+	console.log(query);
+
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+
+		result = await connection.execute(query);
+
+		console.log('Connected to insert user data');
+	} catch (error) {
+	} finally {
+		if (connection) {
+			try {
+				await connection.close();
+				console.log('Connection ended');
+				res.status(200).send(result);
+			} catch (error) {
+				res.status(401).send(error.message);
+			}
+		}
+	}
+}
+
+
+
+app.post('/updatetriprating', (req, res) => {
+	data = req.body;
+	const senddata = [
+		data.cl_id,
+		data.dr_id,
+		data.trip_id,
+		data.rating,
+		data.user_Type
+	];
+	UpdateTrip(req, res, senddata);
 });
 
 //

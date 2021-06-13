@@ -197,7 +197,14 @@
 </template>
 
 <script>
-	import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
+
+
+//mapGetters -> Change kore fetch korle
+//mapMutations -> function (Set function)
+//mapState -> keeps variables
+//mapActions -> function with async await. Data fetch e use hoy
+
+	import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'; /// shob global stuff ekhane
 	import Account from '../components/Account.vue';
 
 	export default {
@@ -306,6 +313,48 @@
 					}
 				}
 			},
+			// async insertCarOwnerdata() {
+			// 	let driverdata = {
+			// 		user_name: this.duname,
+			// 		admin_id: '1010',
+			// 		Name_Fname: this.dfname,
+			// 		Name_Lname: this.dlname,
+			// 		password: this.dpass,
+			// 		dob: this.ddob,
+			// 		Phone_No: this.dphn,
+			// 		user_typ: 'D',
+			// 		nid: this.dnid,
+			// 		CownID: this.dcoid,
+			// 		carID: this.dcarid,
+			// 	};
+			// 	console.log(driverdata);
+
+			// 	const isEmpty = Object.values(driverdata).some(
+			// 		(x) => x === null || x === ''
+			// 	);
+			// 	console.log(isEmpty);
+
+			// 	if (isEmpty) {
+			// 		alert('Please enter all of the information!');
+			// 	} else {
+			// 		const something = await fetch(
+			// 			'http://localhost:5000/insertuserdriver',
+			// 			{
+			// 				method: 'post',
+			// 				headers: {
+			// 					Accept: 'application/json, text/plain, /',
+			// 					'Content-Type': 'application/json',
+			// 				},
+			// 				body: JSON.stringify(driverdata),
+			// 			}
+			// 		);
+
+			// 		if (something.ok) {
+			// 			alert('Sign up successful');
+			// 			location.reload();
+			// 		}
+			// 	}
+			// },
 
 			async GetUserData() {
 				let loginusername = this.username;
@@ -332,13 +381,6 @@
 				} else {
 					localStorage.setItem('token', theresponse.uid);
 					console.log('Success ', localStorage.getItem('token'));
-
-					// this.setAuthentication;
-
-					/* this.$router.push({
-						path: '/home',
-					}); */
-
 					location.reload();
 				}
 			},
