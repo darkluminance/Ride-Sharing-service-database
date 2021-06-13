@@ -25,11 +25,15 @@ export default createStore({
 
 		//Trip info
 		pickupLocation: [0, 0],
+		pickupLocationName: '',
 		destination: [0, 0],
+		destinationLocationName: '',
 		tripType: '',
 		tripFare: [0, 0],
+		tripDuration: 0,
 
 		amIontrip: false,
+		lastTripData: [],
 	},
 	mutations: {
 		setRequestGoTime(state, gotime) {
@@ -90,14 +94,27 @@ export default createStore({
 		setTrippickup(state, pickup) {
 			state.pickupLocation = pickup;
 		},
+		setTripPickupName(state, pickup) {
+			state.pickupLocationName = pickup;
+		},
 		setTripDestination(state, destination) {
 			state.destination = destination;
+		},
+		setTripDestinationName(state, destination) {
+			state.destinationLocationName = destination;
 		},
 		setTripFare(state, fares, farep) {
 			state.tripFare = [fares, farep];
 		},
+		setTripDuration(state, duration) {
+			state.tripDuration = duration;
+		},
 		setontrip(state, bool) {
 			state.amIontrip = bool;
+		},
+
+		setLastTripData(state, data) {
+			state.lastTripData = data;
 		},
 	},
 	actions: {},
@@ -110,6 +127,9 @@ export default createStore({
 				state.tripType,
 				state.destination,
 				state.tripFare,
+				state.tripDuration,
+				state.pickupLocationName,
+				state.destinationLocationName,
 			];
 		},
 		getDData(state) {

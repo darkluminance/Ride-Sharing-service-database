@@ -136,7 +136,7 @@
 		computed: {
 			...mapGetters(['getTripDetails']),
 			/* tripdetails(){
-				return 
+				return
 			} */
 		},
 
@@ -178,7 +178,7 @@
 			});
 
 			socket.on('tripstart', (sockid) => {
-				this.$refs.mapComponent.clearTheRoute();
+				//this.$refs.mapComponent.clearTheRoute();
 				this.$store.commit('setontrip', true);
 				this.$refs.mapComponent.gettheroute(
 					this.$store.state.destination[0],
@@ -186,7 +186,7 @@
 				);
 			});
 
-			socket.on('finishtrip', (sockid) => {
+			socket.on('finishtrip', (sockid, dataend) => {
 				console.log(
 					'The trip fare is: ',
 					this.$store.state.tripfare,
@@ -194,6 +194,7 @@
 					this.rprem,
 					this.tripdetails
 				);
+
 				this.isTripAccepted = false;
 				this.socketid_of_requester = '';
 				this.tripdetails = null;
@@ -202,6 +203,8 @@
 
 				this.$refs.mapComponent.clearTheRoute();
 				this.$store.commit('setontrip', false);
+				this.$store.commit('setLastTripData', dataend);
+				console.log(this.$store.state.lastTripData);
 			});
 
 			socket.on('request', (socketid, tdata, udata) => {
@@ -218,6 +221,7 @@
 					this.$store.commit('setTripDestination', tdata[3]);
 					console.log('The tripfare will be , ', tdata[4]);
 					this.$store.commit('setTripFare', tdata[4]);
+					this.$store.commit('setTripDuration', tdata[5]);
 					this.$store.commit('setUUID', udata[0]);
 					this.$store.commit('setUName', udata[1]);
 					this.$store.commit('setUPhone', udata[2]);
@@ -310,7 +314,7 @@
 				socket.emit('tripstart', this.socketid_of_requester);
 			},
 
-			finishTrip() {
+			async finishTrip() {
 				let setoffares = this.$store.state.tripFare[0];
 				// console.log('The trip fare is: ', setoffares[0], setoffares[1]);
 				let thefare = 0;
@@ -321,6 +325,87 @@
 				console.log(this.$store.state.userID);
 				console.log(this.$store.state.driverID);
 
+				//Generate 32 character hexadecimal unique ID for trip
+				let hexed = Date.now().toString(16);
+				hexed = hexed + hexed + hexed;
+				let trip_ID = hexed.substring(0, 32);
+
+				//Get current time
+				let today = new Date();
+				let startTime =
+					today.getHours() +
+					':' +
+					today.getMinutes() +
+					':' +
+					today.getSeconds();
+				//Add minutes to current time
+				let minutes = this.$store.state.tripDuration; //Amount of minutes to add
+				let addeddate = new Date(today.getTime() + minutes * 60000);
+				let endTime =
+					addeddate.getHours() +
+					':' +
+					addeddate.getMinutes() +
+					':' +
+					addeddate.getSeconds();
+
+				let pickupLocationX = this.tripdetails[0][0];
+				let pickupLocationY = this.tripdetails[0][1];
+				let pickupLocationName = this.tripdetails[6];
+
+				let destinationLocationX = this.tripdetails[3][0];
+				let destinationLocationY = this.tripdetails[3][1];
+				let destinationLocationName = this.tripdetails[7];
+				console.log(pickupLocationName, destinationLocationName);
+
+				let fareInitAmount = thefare;
+				let fareFinalAmount = thefare;
+
+				let the_trip_type = this.tripdetails[2];
+
+				let tripclientID = this.$store.state.userID;
+				let tripdriverID = this.$store.state.driverID;
+
+				let tripDate =
+					today.getFullYear() +
+					'/' +
+					(today.getMonth() + 1) +
+					'/' +
+					today.getDate();
+
+				let tripData = {
+					trip_id: trip_ID,
+					start_time: startTime,
+					end_time: endTime,
+					fare_init: fareInitAmount,
+					fare_amnt: fareFinalAmount,
+					pick_up_x: pickupLocationX,
+					pick_up_y: pickupLocationY,
+					drop_off_x: destinationLocationX,
+					drop_off_y: destinationLocationY,
+					cl_rating: 0,
+					dr_rating: 0,
+					trip_date: tripDate,
+					clu_id: tripclientID,
+					dr_id: tripdriverID,
+					pick_up_name: pickupLocationName,
+					drop_off_name: destinationLocationName,
+					trip_type: the_trip_type,
+				};
+
+				let insertTrip = await fetch('http://localhost:5000/trip', {
+					method: 'post',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(tripData),
+				});
+				let theresponse = await insertTrip.json();
+
+				console.log(theresponse);
+
+				/////////////////////////////////////////////////////
+				/////////////////////////////////////////////////////
+				/////////////////////////////////////////////////////
 				alert(`The trip fare is: Tk. ${thefare}`);
 				this.isTripAccepted = false;
 				this.socketid_of_requester = '';
@@ -330,7 +415,9 @@
 
 				this.$refs.dmapComponent.clearTheRoute();
 				this.$store.commit('setontrip', false);
-				socket.emit('finishtrip', this.socketid_of_requester);
+				socket.emit('finishtrip', this.socketid_of_requester, tripData);
+				this.$store.commit('setLastTripData', tripData);
+				console.log(this.$store.state.lastTripData);
 			},
 
 			getname(value, value2, f1, f2) {
@@ -420,7 +507,7 @@
 							total_rating: udata[1],
 							total_trips: udata[2],
 						};
-						console.log(this.cliverdata);
+						// console.log(this.cliverdata);
 					})
 					.catch((err) => {
 						console.log(err, 'Error!!!');
@@ -452,7 +539,7 @@
 							uid: udata[0],
 							total_earning: udata[1],
 						};
-						console.log('Driver', this.driverdata);
+						// console.log('Driver', this.driverdata);
 					})
 					.catch((err) => {
 						console.log(err, 'Error!!!');
@@ -499,32 +586,13 @@
 						localStorage.removeItem('token');
 						location.reload();
 					});
-
-				/* setTimeout(() => {
-					this.userdata = {
-						uid: udata[0],
-						name: udata[1] + ' ' + udata[2],
-						phone: udata[3],
-						dob: udata[4],
-						age: udata[5],
-						type: udata[6],
-						username: udata[7],
-					};
-
-					//Data is loaded
-					this.loaded = true;
-				}, 2800); */
 			},
 		},
 
 		mounted() {
 			//WHen loaded, asks the user to enter the username. Then find the user id of the username
-			/* var promp = prompt('Please enter your username', '');
-			this.getUserID(promp); */
 			this.uid = localStorage.getItem('token');
-			console.log(this.uid);
-			/* this.getUserID('confusedungabunga'); */
-			/* this.getUserID('noobmaster69'); */
+			// console.log(this.uid);
 
 			//Now after 800ms search the database for the user data of that user id
 			setTimeout(() => {
@@ -534,12 +602,13 @@
 			//Now after 800ms search the database for the cliver data of that user id
 			setTimeout(() => {
 				this.getCliverData();
-			}, 800);
+			}, 1300);
 
 			//Now after 800ms search the database for the client or driver data of that user id
 			setTimeout(() => {
+				// console.log(this.userdata.type, 'ummmm');
 				if (this.userdata.type === 'D') this.getDriverData();
-			}, 800);
+			}, 1800);
 
 			this.$store.commit('setTripType', 'Standard');
 		},

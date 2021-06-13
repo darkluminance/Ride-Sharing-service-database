@@ -12,8 +12,6 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
 	connectString: 'localhost/xe',
 };
 
@@ -111,10 +109,15 @@ async function getDriverData(req, res, uid) {
 		//If any error occurs while connecting or fetching data
 	} finally {
 		if (connection) {
-			await connection.close(); //Closes the connection
-			console.log('Connection ended');
+			try {
+				await connection.close(); //Closes the connection
+				console.log('Connection ended');
+				res.status(200).send(result.rows); //Sends back the data with success status 200
+			} catch (error) {
+				console.log(error.message);
+				res.status(401).send(error.message);
+			}
 		}
-		res.status(200).send(result.rows); //Sends back the data with success status 200
 	}
 }
 //
@@ -503,66 +506,92 @@ app.post('/updateuserlocation', (req, res) => {
 	updateUserLocation(req, res, senddata);
 });
 
-
 async function sendTripData(req, res, data) {
-
 	const query = `BEGIN
 						SAVEPOINT start_point;
-						insert into Trip(Trip_ID,Start_Time,End_time,Fare_Init_amnt,Fare_amnt,Pick_up_X,Pick_up_Y,Drop_off_X,Drop_off_Y,CL_Rating,Dr_Rating,Trip_date ,CLU_ID,DRU_ID)
-						values('${data[0]}',to_date('${data[1]}','yyyy-mm-dd'),to_date('${data[2]}','yyyy-mm-dd'),${data[3]},${data[4]},${data[5]},${data[6]},${data[7]},'${data[8]},${data[9]},${data[10]},to_date('${data[11]}','yyyy-mm-dd'),'${data[12]}','${data[13]}');
+						insert into Trip(Trip_ID,Start_Time,End_time,Fare_Init_amnt,Fare_amnt,Pick_up_X,Pick_up_Y,Drop_off_X,Drop_off_Y,CL_Rating,Dr_Rating,Trip_date ,CLU_ID,DRU_ID, PICKUP_LOCATION_NAME, DESTINATION_LOCATION_NAME, TRIP_TYPE)
+						values('${data[0]}',to_date('${data[1]}','hh24:mi:ss'),to_date('${data[2]}','hh24:mi:ss'),${data[3]},${data[4]},${data[5]},${data[6]},${data[7]},${data[8]},${data[9]},${data[10]},to_date('${data[11]}','yyyy-mm-dd'),'${data[12]}','${data[13]}', '${data[14]}', '${data[15]}', '${data[16]}');
 						
 						update cliver
 						set total_trips= total_trips+1
-						where U_ID = '1623089940354' or U_ID = '39324234';
+						where U_ID =  '${data[12]}';
+
+						update cliver
+						set total_trips= total_trips+1
+						where U_ID =  '${data[13]}';
+						
+						update cliver
+						set total_rating= total_rating+5
+						where U_ID =  '${data[12]}';
+
+						update cliver
+						set total_rating= total_rating+5
+						where U_ID =  '${data[13]}';
+						
+
+						update driver
+						set total_earning = total_earning + ${data[4]}
+						where U_ID = '${data[13]}'; 
+
+						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
 						ROLLBACK TO start_point;
 					END;`;
 
+	// console.log(query);
+
 	try {
 		connection = await oracledb.getConnection(dbconnection);
 
-		result = await connection.execute(query, {}, { autoCommit: true });
+		result = await connection.execute(query);
 
 		console.log('Connected to insert user data');
 	} catch (error) {
 	} finally {
 		if (connection) {
-			await connection.close();
-			console.log('Connection ended');
+			try {
+				await connection.close();
+				console.log('Connection ended');
+				res.status(200).send(result);
+			} catch (error) {
+				res.status(401).send(error.message);
+			}
 		}
-		res.status(200).send(result);
 	}
 }
 app.post('/trip', (req, res) => {
 	data = req.body;
 
 	//Format the obtained data into separate values and form an array with it
-	const tripid = data.trip_id;
-	const startime = data.start_time;
-	const endtime = data.end_time;
-	const fareinit = data.fare_init;
-	const fareamount = data.fare_amnt;
-	const pickX = data.pick_up_x;
-	const pickY = data.pick_up_y;
-	const dropoffX = data.drop_off_x;
-	const dropoffY = data.drop_off_y;
-	const clrating = data.cl_rating;
-	const drrating = data.dr_rating;
-	const tripdate = data.trip_date;
-	const cluid = data.clu_id;
-	const drid = data.dr_id;
+	let piname = data.pick_up_name;
+	piname = piname.replace(/ /g, '_');
+	let dname = data.drop_off_name;
+	dname = dname.replace(/ /g, '_');
 
-
-	const senddata = [trip_id, start_time, end_time, fare_init, fare_amnt,
-		 pick_up_x, pick_up_y, drop_off_x, drop_off_y, cl_rating, dr_rating,
-		 trip_date,clu_id,dr_id];
-
+	const senddata = [
+		data.trip_id,
+		data.start_time,
+		data.end_time,
+		data.fare_init,
+		data.fare_amnt,
+		data.pick_up_x,
+		data.pick_up_y,
+		data.drop_off_x,
+		data.drop_off_y,
+		5, // data.cl_rating,
+		5, // data.dr_rating,
+		data.trip_date,
+		data.clu_id,
+		data.dr_id,
+		piname,
+		dname,
+		data.trip_type,
+	];
+	console.log(senddata);
+	//res.send(senddata);
 	sendTripData(req, res, senddata);
 });
-
-
-
 
 //
 //
@@ -705,8 +734,8 @@ io.on('connection', (socket) => {
 	//
 	//
 	//
-	socket.on('finishtrip', (socet_id) => {
-		socket.broadcast.emit('finishtrip', socet_id);
+	socket.on('finishtrip', (socet_id, tripdata) => {
+		socket.broadcast.emit('finishtrip', socet_id, tripdata);
 	});
 	//
 	//
