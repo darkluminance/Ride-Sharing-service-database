@@ -15,13 +15,14 @@
     } */
     .bg-light1{
       background-color: #6c5ce7;
+      max-height: 1000px;
     }
     .font-clr{
       color: #e1d2f0;
     }
     .table-ref{
-    min-width:900px;
-    max-width:1000px;
+    min-width:1000px;
+    max-width:1500px;
     font-size: 14px;
     font-family:sans-serif;
 }
@@ -30,7 +31,7 @@
     border-collapse: collapse;
     width: 100%;
     /* box-shadow: 0 0 5px rgba(108, 92, 231); */
-    border-bottom:3px solid rgb(108, 92, 231);
+    /* border-bottom:3px solid rgb(108, 92, 231); */
 }
 
 .table-ref-data thead tr {
@@ -47,6 +48,14 @@
 .table-ref-data tbody tr:nth-of-type(even){
   background: #f1ebeb;
 }
+.nav-link{
+  padding: 3rem 3rem;
+    padding-top: 2.5rem;
+    padding-right: 3rem;
+    padding-bottom: 2rem;
+    padding-left: 3rem;
+}
+
   </style>
   <script src="indexAdmin.js"></script>
 </head>
@@ -72,52 +81,32 @@
           
           <li class="nav-item">
             <a class="nav-link font-clr" href="#">
-              <h5 id="haga">User Table</h5>
+              <h5 id="user">User Table</h5>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link font-clr" href="#">
-              <p >select * from users</p>
+              <h5 id="client">Client Table</h5>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link font-clr" href="#">
-             <p>select * from users</p>
+             <h5 id="driver">Driver Table</h5>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
+              <h5 id="trip">Trip Table</h5>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
+              <h5 id="CarOwn">Car Owner Table</h5>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link font-clr" href="#">
-              <p>select * from users</p>
+              <h5 id="car">Car</h5>
             </a>
           </li>
         </ul>

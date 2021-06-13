@@ -17,7 +17,7 @@ const dbconnection = {
 app.use(cors());
 
 //Will convert all coming data into JSON
-
+app.use(express.json());
 app.use(express.static('public'));
 //users headers
 const userdata = {
@@ -43,12 +43,19 @@ const userdata = {
 ///USERS INFO
 async function getData(req,res) {
     const query=`select * from userr`;
+		var udata = null;
     try {
 		//Try to perform a connection to the oracle database using the credentials above
 		connection = await oracledb.getConnection(dbconnection);
 
 		//Executes the query and stores the obtained data
 		result = await connection.execute(query);
+
+		udata = {
+			headers: ["U_ID","User_name","Admin_id","Fname","Lname","phn","dob","age","usertype"],
+			rows: result.rows,
+		}
+
 
 		console.log('Connected');
 	} catch (error) {
@@ -58,10 +65,150 @@ async function getData(req,res) {
 			await connection.close(); //Closes the connection
 			console.log('Connection ended');
 		}
-		res.status(200).send(result.rows); //Sends back the data with success status 200
+		res.status(200).send(udata); //Sends back the data with success status 200
+    }
+}
+///------------Clientt---------------
+async function get_ClData(req,res) {
+    const query=`select * from clientt`;
+		var udata = null;
+    try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: ["U_ID","CL_X","CL_Y"],
+			rows: result.rows,
+		}
+
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
     }
 }
 
+//------------DRIVER-----------
+async function get_DrData(req,res) {
+    const query=`select * from driver`;
+		var udata = null;
+    try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: ["U_ID","D_X","D_Y","Total_Earning"],
+			rows: result.rows,
+		}
+
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
+    }
+}
+//------------TRIP-----------
+async function get_Trip(req,res) {
+    const query=`select * from trip`;
+		var udata = null;
+    try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: ["Trip_ID","Start_Time","End_time","Fare_Init_amnt","Fare_amnt","Pick_up_X","Pick_up_Y","Drop_off_X"," Drop_off_Y ","CL_Rating","Dr_Rating","pickup_location_name","destination_location_name","trip_type"],
+			rows: result.rows,
+		}
+
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
+    }
+}
+//------------CAR OWNER-----------
+async function get_CarOwn(req,res) {
+    const query=`select *from Car_Owner`;
+		var udata = null;
+    try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: ["U_ID","Car_Rent"],
+			rows: result.rows,
+		}
+
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
+    }
+}
+//------------CAR-----------
+async function get_Car(req,res) {
+    const query=`select *from Car`;
+		var udata = null;
+    try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: ["Car_ID","Car_no","Car_color","Car_model","Car_type","Percentage","COU_ID"],
+			rows: result.rows,
+		}
+
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
+    }
+}
 //Get user data	-------> req is the request, res is the response we'll send back to the browser and uid is the userid whose
 //data we'll search
 async function getUserData(req, res, uid) {
@@ -131,11 +278,41 @@ app.get('/getuserid/:name', (request, response) => {
 
 ///GET req for getting user info
 app.get('/Userdata',(request,response) => {
-    res.json(userdata);
+    //res.json(userdata);
     console.log('req obtained');
     getData(request,response);
 });
 
+///get req form clientt
+app.get('/Client',(request,response) => {
+    //res.json(userdata);
+    console.log('req obtained');
+    get_ClData(request,response);
+});
+///get req from driver
+app.get('/Driver',(request,response) => {
+    //res.json(userdata);
+    console.log('req obtained');
+    get_DrData(request,response);
+});
+///get req from trip
+app.get('/Trip',(request,response) => {
+    //res.json(userdata);
+    console.log('req obtained');
+    get_Trip(request,response);
+});
+///get req from car owner
+app.get('/CarOwn',(request,response) => {
+    //res.json(userdata);
+    console.log('req obtained');
+    get_CarOwn(request,response);
+});
+///get req from car
+app.get('/Car',(request,response) => {
+    //res.json(userdata);
+    console.log('req obtained');
+    get_Car(request,response);
+});
 
 app.listen(port, () => {
 	console.log(`Listening on port ${port}`);
