@@ -322,7 +322,6 @@
 			},
 
 			async insertrating(givenrating) {
-
 				this.showtripsummary = false;
 				let poster = {
 					cl_id: this.$store.state.lastTripData.clu_id,
@@ -332,7 +331,7 @@
 					user_Type: this.userdata.type,
 				};
 				console.log(poster);
-				
+
 				let insertRating = await fetch(
 					'http://localhost:5000/updatetriprating',
 					{
@@ -343,8 +342,8 @@
 						body: JSON.stringify(poster),
 					}
 				);
-				let theresponse = await insertRating.json();
-				console.log(theresponse); 
+				/* let theresponse = await insertRating.json();
+				console.log(theresponse); */
 			},
 
 			async finishTrip() {

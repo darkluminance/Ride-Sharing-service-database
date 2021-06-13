@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'ryoko',
+	password: 'ryoko',
 	connectString: 'localhost/xe',
 };
 
@@ -522,20 +522,11 @@ async function sendTripData(req, res, data) {
 						set total_trips= total_trips+1
 						where U_ID =  '${data[13]}';
 						
-						update cliver
-						set total_rating= total_rating+5
-						where U_ID =  '${data[12]}';
-
-						update cliver
-						set total_rating= total_rating+5
-						where U_ID =  '${data[13]}';
-						
 
 						update driver
 						set total_earning = total_earning + ${data[4]}
 						where U_ID = '${data[13]}'; 
 
-						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
 						ROLLBACK TO start_point;
@@ -581,8 +572,8 @@ app.post('/trip', (req, res) => {
 		data.pick_up_y,
 		data.drop_off_x,
 		data.drop_off_y,
-		5, // data.cl_rating,
-		5, // data.dr_rating,
+		0, // data.cl_rating,
+		0, // data.dr_rating,
 		data.trip_date,
 		data.clu_id,
 		data.dr_id,
@@ -595,9 +586,6 @@ app.post('/trip', (req, res) => {
 	sendTripData(req, res, senddata);
 });
 
-
-
-
 async function UpdateTrip(req, res, data) {
 	const query1 = `BEGIN
 						SAVEPOINT start_point;
@@ -607,12 +595,15 @@ async function UpdateTrip(req, res, data) {
 					
 						update trip
 						set CL_Rating=  ${data[3]}
-						where trip_id =' ${data[2]}';
+						where trip_id ='${data[2]}';
+
+						
 					EXCEPTION
 						WHEN OTHERS THEN
 						ROLLBACK TO start_point;
 					END;`;
-	const query2 =  `BEGIN
+
+	const query2 = `BEGIN
 						SAVEPOINT start_point;
 						update cliver
 						set total_rating = total_rating+ ${data[3]}
@@ -620,25 +611,22 @@ async function UpdateTrip(req, res, data) {
 
 						update trip
 						set dr_Rating=  ${data[3]}
-						where trip_id =' ${data[2]}';
+						where trip_id ='${data[2]}';
+						
 					EXCEPTION
 						WHEN OTHERS THEN
 						ROLLBACK TO start_point;
 					END;`;
 
 	var query = '';
-	
-	if(data[4]==='C')
-	{
+
+	if (data[4] === 'C') {
 		query = query1;
-	}
-	else if (data[4]==='D')
-	{
+	} else if (data[4] === 'D') {
 		query = query2;
 	}
 
 	console.log(query);
-
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -647,6 +635,8 @@ async function UpdateTrip(req, res, data) {
 
 		console.log('Connected to insert user data');
 	} catch (error) {
+		console.log(error.message);
+		res.status(401).send(error.message);
 	} finally {
 		if (connection) {
 			try {
@@ -660,8 +650,6 @@ async function UpdateTrip(req, res, data) {
 	}
 }
 
-
-
 app.post('/updatetriprating', (req, res) => {
 	data = req.body;
 	const senddata = [
@@ -669,7 +657,7 @@ app.post('/updatetriprating', (req, res) => {
 		data.dr_id,
 		data.trip_id,
 		data.rating,
-		data.user_Type
+		data.user_Type,
 	];
 	UpdateTrip(req, res, senddata);
 });
