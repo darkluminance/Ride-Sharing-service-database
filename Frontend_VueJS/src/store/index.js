@@ -33,7 +33,7 @@ export default createStore({
 		tripDuration: 0,
 
 		amIontrip: false,
-		lastTripData: [],
+		lastTripData: {},
 	},
 	mutations: {
 		setRequestGoTime(state, gotime) {

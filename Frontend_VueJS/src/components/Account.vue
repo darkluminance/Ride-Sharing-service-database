@@ -81,6 +81,9 @@
 			Logging in...
 		</h2>
 	</div>
+
+	<!-- Trip Summary Card -->
+	<TripSummary @rateabitchh="insertrating" v-if="showtripsummary"></TripSummary>
 </template>
 
 <script>
@@ -90,6 +93,7 @@
 	import MapDriver from '../components/MapDriver.vue';
 	import CircleSpinner from '../components/Animations/CircleSpinner';
 	import TripRequest from '../components/TripRequest.vue';
+	import TripSummary from '../components/TripSummary.vue';
 	import AcceptRequestMenu from '../components/AcceptRequestMenu.vue';
 	import AcceptRequestMenuClientt from '../components/AcceptRequestMenuClientt.vue';
 	import { io } from 'socket.io-client';
@@ -109,6 +113,7 @@
 			MapDriver,
 			CircleSpinner,
 			TripRequest,
+			TripSummary,
 			AcceptRequestMenu,
 			AcceptRequestMenuClientt,
 		},
@@ -130,6 +135,7 @@
 				isTripAccepted: false,
 				socketid_of_requester: '',
 				tripdetails: null,
+				showtripsummary: false,
 			};
 		},
 
@@ -205,6 +211,7 @@
 				this.$store.commit('setontrip', false);
 				this.$store.commit('setLastTripData', dataend);
 				console.log(this.$store.state.lastTripData);
+				this.showtripsummary = true;
 			});
 
 			socket.on('request', (socketid, tdata, udata) => {
@@ -314,6 +321,31 @@
 				socket.emit('tripstart', this.socketid_of_requester);
 			},
 
+			async insertrating(givenrating) {
+				this.showtripsummary = false;
+				let poster = {
+					cl_id: this.$store.state.lastTripData.clu_id,
+					dr_id: this.$store.state.lastTripData.dr_id,
+					trip_id: this.$store.state.lastTripData.trip_id,
+					rating: givenrating,
+					user_Type: this.userdata.type,
+				};
+				console.log(poster);
+
+				/* let insertRating = await fetch(
+					'http://localhost:5000/updatetriprating',
+					{
+						method: 'post',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(poster),
+					}
+				);
+				let theresponse = await insertRating.json();
+				console.log(theresponse); */
+			},
+
 			async finishTrip() {
 				let setoffares = this.$store.state.tripFare[0];
 				// console.log('The trip fare is: ', setoffares[0], setoffares[1]);
@@ -418,6 +450,7 @@
 				socket.emit('finishtrip', this.socketid_of_requester, tripData);
 				this.$store.commit('setLastTripData', tripData);
 				console.log(this.$store.state.lastTripData);
+				this.showtripsummary = true;
 			},
 
 			getname(value, value2, f1, f2) {
