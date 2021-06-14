@@ -222,37 +222,37 @@
 
         if(user){
         user.addEventListener("click",function(){
-             alert("hi");
+            //  alert("hi");
              updateTable(root);
         });
         }
         if(client){
         client.addEventListener("click",function(){
-             alert("hi");
+            //  alert("hi");
              update_ClTable(root);
         });
         }
         if(driver){
             driver.addEventListener("click",function(){
-                 alert("hi");
+                //  alert("hi");
                  update_DrTable(root);
             });
         }
         if(trip){
             trip.addEventListener("click",function(){
-                 alert("hi");
+                //  alert("hi");
                  update_Trip(root);
             });
         }
         if(carown){
             carown.addEventListener("click",function(){
-                alert("hi");
+                // alert("hi");
                 update_CarOwn(root);
            });
         }
         if(car){
             car.addEventListener("click",function(){
-                alert("hi");
+                // alert("hi");
                 update_Car(root);
            });
         }

@@ -3,7 +3,7 @@ import { createStore } from 'vuex';
 export default createStore({
 	state: {
 		pickupCoords: [0, 0],
-		requestWaitTime: 60,
+		requestWaitTime: 25,
 		requestGoTime: 0,
 
 		isAuthenticated: false,

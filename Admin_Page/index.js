@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'MahaDbms',
-	password: 'MahaDbms',
+	user: 'talkinghead',
+	password: 'talk',
 	connectString: 'localhost/xe',
 };
 
@@ -42,7 +42,7 @@ const userdata = {
 };
 ///USERS INFO
 async function getData(req,res) {
-    const query=`select * from userr`;
+    const query=`select * from user_view`;
 		var udata = null;
     try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -52,7 +52,7 @@ async function getData(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["U_ID","User_name","Admin_id","Fname","Lname","Password","phn","dob","age","usertype"],
+			headers: ["User ID","User Name","First Name","Last Name","Phone","Date of Birth","Age","User Type"],
 			rows: result.rows,
 		}
 
@@ -80,7 +80,7 @@ async function get_ClData(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["U_ID","CL_X","CL_Y"],
+			headers: ["User ID","Client Location X","Client Location Y"],
 			rows: result.rows,
 		}
 
@@ -109,7 +109,7 @@ async function get_DrData(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["U_ID","NID","COID","CAR_ID","DR_Location_X","DR_Location_Y","Total_Earning"],
+			headers: ["User ID","NID","Car Owner ID","Car Number","Driver Location X","Driver Location Y","Total Earning"],
 			rows: result.rows,
 		}
 
@@ -127,7 +127,24 @@ async function get_DrData(req,res) {
 }
 //------------TRIP-----------
 async function get_Trip(req,res) {
-    const query=`select * from trip`;
+    const query=`select  Trip_ID,
+			to_char(Start_Time, 'hh:mi:ssam'),
+			to_char(End_Time, 'hh:mi:ssam'),
+			trip_type,
+			Fare_Init_amnt,
+			Fare_amnt,
+			Pick_up_X,
+			Pick_up_Y,
+			Drop_off_X,
+			Drop_off_Y,
+			pickup_location_name,
+			destination_location_name,
+			CL_Rating,
+			Dr_Rating,
+			to_char(Trip_date, 'dd-mon-yyyy'),
+			CLU_ID ,
+			DRU_ID
+			from trip`;
 		var udata = null;
     try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -137,7 +154,7 @@ async function get_Trip(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["Trip_ID","Start_Time","End_time","Fare_Init_amnt","Fare_amnt","Pick_up_X","Pick_up_Y","Drop_off_X"," Drop_off_Y ","CL_Rating","Dr_Rating","Trip_Date","CLU_ID","DRU_ID","Pickup_Location_Name","Destination_Location_Name","Trip_Type"],
+			headers: ["Trip ID","Start Time","End Time","Trip Type","Fare Initial Amount","Fare Amount","Pick Up X","Pick Up Y","Drop Off X"," Drop Off Y ","Pickup Location Name","Destination Location Name","Client Rating","Driver Rating","Trip Date","Client ID","Driver ID"],
 			rows: result.rows,
 		}
 
@@ -165,7 +182,7 @@ async function get_CarOwn(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["U_ID","Car_Rent"],
+			headers: ["User ID","Car Rent", "NID", "Car Number"],
 			rows: result.rows,
 		}
 
@@ -193,7 +210,7 @@ async function get_Car(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["Car_ID","Car_no","Car_color","Car_model","Car_type","Percentage","COU_ID"],
+			headers: ["Car Number","Car Color","Car Model","Car Type","Percentage","Car Owner ID"],
 			rows: result.rows,
 		}
 

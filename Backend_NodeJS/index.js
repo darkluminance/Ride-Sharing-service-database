@@ -695,7 +695,10 @@ async function InsertCarOwner(req, res, data, info) {
 					SAVEPOINT start_point;
 
 						insert into userr (u_id, user_name, admin_id, Name_Fname, Name_Lname, passwordd, dob,age, Phone_No, user_typ) 
-						values('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4]}','${data[5]}',to_date('${data[6]}','yyyy-mm-dd'), TRUNC(TO_NUMBER(SYSDATE - TO_DATE('${data[6]}','yyyy-mm-dd')) / 365.25), '${data[7]}','${data[8]}');
+						values('${data[0]}','${data[1]}',(SELECT u_id FROM(SELECT u_id FROM userr where admin_id is null ORDER BY dbms_random.value) WHERE rownum = 1),
+						'${data[3]}','${data[4]}','${data[5]}',to_date('${data[6]}','yyyy-mm-dd'), TRUNC(TO_NUMBER(SYSDATE - TO_DATE('${data[6]}','yyyy-mm-dd')) / 365.25), '${data[7]}','${data[8]}');
+						
+						
 						
 						update car_owner
 						set N_ID = '${info[1]}',
@@ -724,7 +727,11 @@ async function InsertCarOwner(req, res, data, info) {
 app.post('/insertcarowner', (req, res) => {
 	data = req.body;
 	console.log(data);
-	const userid = Date.now();
+
+	let hexed = Date.now().toString(16);
+	hexed = data.user_typ + '-' + hexed + hexed + hexed;
+	let the_id = hexed.substring(0, 32).toUpperCase();
+	const userid = the_id;
 	const username = data.user_name;
 	const adminid = data.admin_id;
 	const fname = data.Name_Fname;
