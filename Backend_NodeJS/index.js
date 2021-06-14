@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'ryoko',
-	password: 'ryoko',
+	user: 'talkinghead',
+	password: 'talk',
 	connectString: 'localhost/xe',
 };
 
@@ -583,7 +583,6 @@ app.post('/trip', (req, res) => {
 		data.trip_type,
 	];
 	console.log(senddata);
-	//res.send(senddata);
 	sendTripData(req, res, senddata);
 });
 
@@ -662,6 +661,75 @@ app.post('/updatetriprating', (req, res) => {
 		data.user_Type,
 	];
 	UpdateTrip(req, res, senddata);
+});
+
+
+async function InsertCarOwner(req, res, data, info) {
+	const query = ` BEGIN
+					SAVEPOINT start_point;
+
+						insert into userr (u_id, user_name, admin_id, Name_Fname, Name_Lname, passwordd, dob,age, Phone_No, user_typ) 
+						values('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4]}','${data[5]}',to_date('${data[6]}','yyyy-mm-dd'), TRUNC(TO_NUMBER(SYSDATE - TO_DATE('${data[6]}','yyyy-mm-dd')) / 365.25), '${data[7]}','${data[8]}');
+						
+						update car_owner
+						set N_ID = '${info[1]}',
+						Car_ID = '${info[2]}'
+						where U_ID ='${info[0]}';
+					EXCEPTION
+					WHEN OTHERS THEN
+					ROLLBACK TO start_point;
+					END;`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		console.log('Connected');
+
+		result = await connection.execute(query, {}, { autoCommit: true });
+	} catch (error) {
+	} finally {
+		if (connection) {
+			await connection.close();
+			console.log('Connection ended');
+		}
+		res.status(200).send(result);
+	}
+}
+
+
+
+
+app.post('/insertcarowner', (req, res) => {
+	data = req.body;
+	console.log(data);
+	const userid = Date.now();
+	const username = data.user_name;
+	const adminid = data.admin_id;
+	const fname = data.Name_Fname;
+	const lname = data.Name_Lname;
+	const pass = data.password;
+	const dob = data.dob;
+	const phn = data.Phone_No;
+	const usertyp = data.user_typ;
+
+	const nid = data.nid;
+	const carid = data.carID;
+
+	const ownerinfo = [userid, nid, carid];
+	const senddata = [
+		userid,
+		username,
+		adminid,
+		fname,
+		lname,
+		pass,
+		dob,
+		phn,
+		usertyp,
+	];
+	console.log(ownerinfo);
+	console.log(senddata);
+	InsertCarOwner(req, res, senddata, ownerinfo);
+	console.log(`${senddata}`);
 });
 
 //
