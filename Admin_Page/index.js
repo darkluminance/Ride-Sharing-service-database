@@ -2,7 +2,7 @@ const express = require('express'); //Import express JS library
 const app = express();
 
 const oracledb = require('oracledb'); //Import oracle library
-const port = 5000; //Set backend server port number
+const port = 5001; //Set backend server port number
 const cors = require('cors'); //CORS allows requests from browser to be allowed
 const { response, request } = require('express');
 
