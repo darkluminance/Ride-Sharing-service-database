@@ -168,12 +168,12 @@
 				></i>
 				<p class="create">Create Account</p>
 				<p class="aowner">As a car owner</p>
+				<input type="text" placeholder="User Name" required v-model="cuname" />
 				<input type="text" placeholder="First Name" required v-model="cfname" />
-				<input type="text" placeholder="Last Name" required />
-				<input type="password" placeholder="Password" required />
-				<input type="password" placeholder="Confirm Password" required />
-				<input type="date" placeholder="Date of Birth" required />
-				<input type="tel" placeholder="Phone No" required />
+				<input type="text" placeholder="Last Name" required v-model="clname"/>
+				<input type="password" placeholder="Password" required v-model="cpass"/>
+				<input type="password" placeholder="Confirm Password" required v-model="cconpass" />
+				<input type="date" placeholder="Date of Birth" required v-model="cdob" />
 				<button class="nextown" id="nextown">NEXT PAGE</button>
 			</form>
 		</div>
@@ -186,9 +186,10 @@
 				></i>
 				<p class="create">Create Account</p>
 				<p class="aowner">As a car owner</p>
-				<input type="number" placeholder="NID No" required />
-				<input type="number" placeholder="Car Number" required />
-				<button class="finalsign" id="finalsign">SIGN UP</button>
+				<input type="tel" placeholder="Phone No" required v-model="cphn" />
+				<input type="number" placeholder="NID No" required v-model="cnid" />
+				<input type="number" placeholder="Car Number" required v-model="ccar"/>
+				<button @click ="insertCarOwnerdata" class="finalsign" id="finalsign">SIGN UP</button>
 				<!-- <button>GO BACK</button> -->
 			</form>
 		</div>
@@ -225,8 +226,17 @@
 				dnid: '',
 				dcoid: '',
 				dcarid: '',
+				cuname:'',
+				cfname:'',
+				clname:'',
+				cpass:'',
+				cconpass:'',
+				cdob:'',
+				cphn:'',
+				cnid:'',
+				ccar:'',
 				username: '',
-				password: '',
+				password: ''
 			};
 		},
 		methods: {
@@ -322,48 +332,48 @@
 					}
 				}
 			},
-			// async insertCarOwnerdata() {
-			// 	let driverdata = {
-			// 		user_name: this.duname,
-			// 		admin_id: '1010',
-			// 		Name_Fname: this.dfname,
-			// 		Name_Lname: this.dlname,
-			// 		password: this.dpass,
-			// 		dob: this.ddob,
-			// 		Phone_No: this.dphn,
-			// 		user_typ: 'D',
-			// 		nid: this.dnid,
-			// 		CownID: this.dcoid,
-			// 		carID: this.dcarid,
-			// 	};
-			// 	console.log(driverdata);
+			async insertCarOwnerdata() {
 
-			// 	const isEmpty = Object.values(driverdata).some(
-			// 		(x) => x === null || x === ''
-			// 	);
-			// 	console.log(isEmpty);
+					let ownerdata = {
+					user_name: this.cuname,
+					admin_id: '1010',
+					Name_Fname: this.cfname,
+					Name_Lname: this.clname,
+					password: this.cpass,
+					dob: this.cdob,
+					Phone_No: this.cphn,
+					user_typ: 'CO',
+					nid: this.cnid,
+					carID: this.ccar,
+				};
+				console.log(ownerdata);
 
-			// 	if (isEmpty) {
-			// 		alert('Please enter all of the information!');
-			// 	} else {
-			// 		const something = await fetch(
-			// 			'http://localhost:5000/insertuserdriver',
-			// 			{
-			// 				method: 'post',
-			// 				headers: {
-			// 					Accept: 'application/json, text/plain, /',
-			// 					'Content-Type': 'application/json',
-			// 				},
-			// 				body: JSON.stringify(driverdata),
-			// 			}
-			// 		);
+				const isEmpty = Object.values(ownerdata).some(
+					(x) => x === null || x === ''
+				);
+				console.log(isEmpty);
 
-			// 		if (something.ok) {
-			// 			alert('Sign up successful');
-			// 			location.reload();
-			// 		}
-			// 	}
-			// },
+				if (isEmpty) {
+					alert('Please enter all of the information!');
+				} else {
+					const something = await fetch(
+						'http://localhost:5000/insertcarowner',
+						{
+							method: 'post',
+							headers: {
+								Accept: 'application/json, text/plain, /',
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify(ownerdata),
+						}
+					);
+
+					if (something.ok) {
+						alert('Sign up successful');
+						location.reload();
+					}
+				}
+			},
 
 			async GetUserData() {
 				let loginusername = this.username;
