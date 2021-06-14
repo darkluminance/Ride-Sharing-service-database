@@ -510,7 +510,7 @@ app.post('/updateuserlocation', (req, res) => {
 
 async function sendTripData(req, res, data) {
 	const query = `BEGIN
-						SAVEPOINT start_point;
+						SAVEPOINT start_point1;
 						insert into Trip(Trip_ID,Start_Time,End_time,Fare_Init_amnt,Fare_amnt,Pick_up_X,Pick_up_Y,Drop_off_X,Drop_off_Y,CL_Rating,Dr_Rating,Trip_date ,CLU_ID,DRU_ID, PICKUP_LOCATION_NAME, DESTINATION_LOCATION_NAME, TRIP_TYPE)
 						values('${data[0]}',to_date('${data[1]}','hh24:mi:ss'),to_date('${data[2]}','hh24:mi:ss'),${data[3]},${data[4]},${data[5]},${data[6]},${data[7]},${data[8]},${data[9]},${data[10]},to_date('${data[11]}','yyyy-mm-dd'),'${data[12]}','${data[13]}', '${data[14]}', '${data[15]}', '${data[16]}');
 						
@@ -526,13 +526,14 @@ async function sendTripData(req, res, data) {
 						update driver
 						set total_earning = total_earning + ${data[4]}
 						where U_ID = '${data[13]}'; 
-
+						
+						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
-						ROLLBACK TO start_point;
+						ROLLBACK TO start_point1;
 					END;`;
 
-	// console.log(query);
+	console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -588,34 +589,35 @@ app.post('/trip', (req, res) => {
 
 async function UpdateTrip(req, res, data) {
 	const query1 = `BEGIN
-						SAVEPOINT start_point;
+						SAVEPOINT start_point2;
 						update cliver
 						set total_rating = total_rating+ ${data[3]}
-						where U_ID = '${data[0]}';
+						where U_ID = '${data[1]}';
 					
 						update trip
 						set CL_Rating=  ${data[3]}
 						where trip_id ='${data[2]}';
 
-						
+						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
-						ROLLBACK TO start_point;
+						ROLLBACK TO start_point2;
 					END;`;
 
 	const query2 = `BEGIN
-						SAVEPOINT start_point;
+						SAVEPOINT start_point3;
 						update cliver
 						set total_rating = total_rating+ ${data[3]}
-						where U_ID = '${data[1]}';
+						where U_ID = '${data[0]}';
 
 						update trip
 						set dr_Rating=  ${data[3]}
 						where trip_id ='${data[2]}';
 						
+						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
-						ROLLBACK TO start_point;
+						ROLLBACK TO start_point3;
 					END;`;
 
 	var query = '';

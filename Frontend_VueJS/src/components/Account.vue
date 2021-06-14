@@ -438,7 +438,7 @@
 				/////////////////////////////////////////////////////
 				/////////////////////////////////////////////////////
 				/////////////////////////////////////////////////////
-				alert(`The trip fare is: Tk. ${thefare}`);
+				// alert(`The trip fare is: Tk. ${thefare}`);
 				this.isTripAccepted = false;
 				this.socketid_of_requester = '';
 				this.tripdetails = null;
