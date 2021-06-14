@@ -354,12 +354,17 @@ async function UserDriver(req, res, data, info) {
 		result = await connection.execute(query, {}, { autoCommit: true });
 		// result1 = await connection.execute(query1, {}, { autoCommit: true });
 	} catch (error) {
+		res.status(401).send(error.message);
 	} finally {
-		if (connection) {
-			await connection.close();
-			console.log('Connection ended');
+		try {
+			if (connection) {
+				await connection.close();
+				console.log('Connection ended');
+			}
+			res.status(200).send(result);
+		} catch (error) {
+			res.status(401).send(error.message);
 		}
-		res.status(200).send(result);
 	}
 }
 
@@ -685,7 +690,6 @@ app.post('/updatetriprating', (req, res) => {
 	UpdateTrip(req, res, senddata);
 });
 
-
 async function InsertCarOwner(req, res, data, info) {
 	const query = ` BEGIN
 					SAVEPOINT start_point;
@@ -716,9 +720,6 @@ async function InsertCarOwner(req, res, data, info) {
 		res.status(200).send(result);
 	}
 }
-
-
-
 
 app.post('/insertcarowner', (req, res) => {
 	data = req.body;
