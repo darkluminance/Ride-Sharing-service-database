@@ -197,12 +197,10 @@
 </template>
 
 <script>
-
-
-//mapGetters -> Change kore fetch korle
-//mapMutations -> function (Set function)
-//mapState -> keeps variables
-//mapActions -> function with async await. Data fetch e use hoy
+	//mapGetters -> Change kore fetch korle
+	//mapMutations -> function (Set function)
+	//mapState -> keeps variables
+	//mapActions -> function with async await. Data fetch e use hoy
 
 	import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'; /// shob global stuff ekhane
 	import Account from '../components/Account.vue';
@@ -221,6 +219,7 @@
 				dfname: '',
 				dlname: '',
 				dpass: '',
+				dconpass: '',
 				ddob: '',
 				dphn: '',
 				dnid: '',
@@ -236,7 +235,7 @@
 			async insertclientdata() {
 				let clientdata = {
 					user_name: this.cluname,
-					admin_id: '1010',
+					admin_id: 'null',
 					Name_Fname: this.fname,
 					Name_Lname: this.lname,
 					password: this.clpass,
@@ -252,6 +251,8 @@
 
 				if (isEmpty) {
 					alert('Please enter all of the information');
+				} else if (this.clpass != this.clconpass) {
+					alert('Passwords do not match');
 				} else {
 					const something = await fetch(
 						'http://localhost:5000/insertuserclient',
@@ -267,6 +268,9 @@
 
 					if (something.ok) {
 						alert('Sign up successful');
+						location.reload();
+					} else {
+						alert('Could not sign you up. Please try again');
 						location.reload();
 					}
 				}
@@ -294,6 +298,8 @@
 
 				if (isEmpty) {
 					alert('Please enter all of the information!');
+				} else if (this.dpass != this.dconpass) {
+					alert('Passwords do not match');
 				} else {
 					const something = await fetch(
 						'http://localhost:5000/insertuserdriver',
@@ -309,6 +315,9 @@
 
 					if (something.ok) {
 						alert('Sign up successful');
+						location.reload();
+					} else {
+						alert('Could not sign you up. Please try again');
 						location.reload();
 					}
 				}
