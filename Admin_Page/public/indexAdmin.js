@@ -83,7 +83,7 @@
   
             //populate headers
   
-  
+            
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
   
@@ -145,7 +145,7 @@
   
             //populate headers
   
-  
+            
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
   

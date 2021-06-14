@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'MahaDbms',
+	password: 'MahaDbms',
 	connectString: 'localhost/xe',
 };
 
@@ -52,7 +52,7 @@ async function getData(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["U_ID","User_name","Admin_id","Fname","Lname","phn","dob","age","usertype"],
+			headers: ["U_ID","User_name","Admin_id","Fname","Lname","Password","phn","dob","age","usertype"],
 			rows: result.rows,
 		}
 
@@ -109,7 +109,7 @@ async function get_DrData(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["U_ID","D_X","D_Y","Total_Earning"],
+			headers: ["U_ID","NID","COID","CAR_ID","DR_Location_X","DR_Location_Y","Total_Earning"],
 			rows: result.rows,
 		}
 
@@ -137,7 +137,7 @@ async function get_Trip(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["Trip_ID","Start_Time","End_time","Fare_Init_amnt","Fare_amnt","Pick_up_X","Pick_up_Y","Drop_off_X"," Drop_off_Y ","CL_Rating","Dr_Rating","pickup_location_name","destination_location_name","trip_type"],
+			headers: ["Trip_ID","Start_Time","End_time","Fare_Init_amnt","Fare_amnt","Pick_up_X","Pick_up_Y","Drop_off_X"," Drop_off_Y ","CL_Rating","Dr_Rating","Trip_Date","CLU_ID","DRU_ID","Pickup_Location_Name","Destination_Location_Name","Trip_Type"],
 			rows: result.rows,
 		}
 
