@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'ryoko',
+	password: 'ryoko',
 	connectString: 'localhost/xe',
 };
 
@@ -510,7 +510,7 @@ app.post('/updateuserlocation', (req, res) => {
 
 async function sendTripData(req, res, data) {
 	const query = `BEGIN
-						SAVEPOINT start_point;
+						SAVEPOINT start_point1;
 						insert into Trip(Trip_ID,Start_Time,End_time,Fare_Init_amnt,Fare_amnt,Pick_up_X,Pick_up_Y,Drop_off_X,Drop_off_Y,CL_Rating,Dr_Rating,Trip_date ,CLU_ID,DRU_ID, PICKUP_LOCATION_NAME, DESTINATION_LOCATION_NAME, TRIP_TYPE)
 						values('${data[0]}',to_date('${data[1]}','hh24:mi:ss'),to_date('${data[2]}','hh24:mi:ss'),${data[3]},${data[4]},${data[5]},${data[6]},${data[7]},${data[8]},${data[9]},${data[10]},to_date('${data[11]}','yyyy-mm-dd'),'${data[12]}','${data[13]}', '${data[14]}', '${data[15]}', '${data[16]}');
 						
@@ -522,26 +522,18 @@ async function sendTripData(req, res, data) {
 						set total_trips= total_trips+1
 						where U_ID =  '${data[13]}';
 						
-						update cliver
-						set total_rating= total_rating+5
-						where U_ID =  '${data[12]}';
-
-						update cliver
-						set total_rating= total_rating+5
-						where U_ID =  '${data[13]}';
-						
 
 						update driver
 						set total_earning = total_earning + ${data[4]}
 						where U_ID = '${data[13]}'; 
-
+						
 						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
-						ROLLBACK TO start_point;
+						ROLLBACK TO start_point1;
 					END;`;
 
-	// console.log(query);
+	console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -581,8 +573,8 @@ app.post('/trip', (req, res) => {
 		data.pick_up_y,
 		data.drop_off_x,
 		data.drop_off_y,
-		5, // data.cl_rating,
-		5, // data.dr_rating,
+		0, // data.cl_rating,
+		0, // data.dr_rating,
 		data.trip_date,
 		data.clu_id,
 		data.dr_id,
@@ -595,50 +587,48 @@ app.post('/trip', (req, res) => {
 	sendTripData(req, res, senddata);
 });
 
-
-
-
 async function UpdateTrip(req, res, data) {
 	const query1 = `BEGIN
-						SAVEPOINT start_point;
-						update cliver
-						set total_rating = total_rating+ ${data[3]}
-						where U_ID = '${data[0]}';
-					
-						update trip
-						set CL_Rating=  ${data[3]}
-						where trip_id =' ${data[2]}';
-					EXCEPTION
-						WHEN OTHERS THEN
-						ROLLBACK TO start_point;
-					END;`;
-	const query2 =  `BEGIN
-						SAVEPOINT start_point;
+						SAVEPOINT start_point2;
 						update cliver
 						set total_rating = total_rating+ ${data[3]}
 						where U_ID = '${data[1]}';
+					
+						update trip
+						set CL_Rating=  ${data[3]}
+						where trip_id ='${data[2]}';
+
+						COMMIT;
+					EXCEPTION
+						WHEN OTHERS THEN
+						ROLLBACK TO start_point2;
+					END;`;
+
+	const query2 = `BEGIN
+						SAVEPOINT start_point3;
+						update cliver
+						set total_rating = total_rating+ ${data[3]}
+						where U_ID = '${data[0]}';
 
 						update trip
 						set dr_Rating=  ${data[3]}
-						where trip_id =' ${data[2]}';
+						where trip_id ='${data[2]}';
+						
+						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
-						ROLLBACK TO start_point;
+						ROLLBACK TO start_point3;
 					END;`;
 
 	var query = '';
-	
-	if(data[4]==='C')
-	{
+
+	if (data[4] === 'C') {
 		query = query1;
-	}
-	else if (data[4]==='D')
-	{
+	} else if (data[4] === 'D') {
 		query = query2;
 	}
 
 	console.log(query);
-
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -647,6 +637,8 @@ async function UpdateTrip(req, res, data) {
 
 		console.log('Connected to insert user data');
 	} catch (error) {
+		console.log(error.message);
+		res.status(401).send(error.message);
 	} finally {
 		if (connection) {
 			try {
@@ -660,8 +652,6 @@ async function UpdateTrip(req, res, data) {
 	}
 }
 
-
-
 app.post('/updatetriprating', (req, res) => {
 	data = req.body;
 	const senddata = [
@@ -669,7 +659,7 @@ app.post('/updatetriprating', (req, res) => {
 		data.dr_id,
 		data.trip_id,
 		data.rating,
-		data.user_Type
+		data.user_Type,
 	];
 	UpdateTrip(req, res, senddata);
 });
