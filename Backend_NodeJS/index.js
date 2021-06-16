@@ -845,6 +845,48 @@ app.get('/getu', (req, res) => {
 	abcd(req, res);
 });
 
+async function checkforusername(req, res, un) {
+	const query = `select * from userr where user_name = '${un}'`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		// console.log('Checking if the username exists ', un);
+
+		result = await connection.execute(query);
+
+		// console.log(result.rows.length);
+
+		if (result.rows.length === 0) {
+			res.status(201).send({
+				found: false,
+			});
+		} else {
+			res.status(201).send({
+				found: true,
+			});
+		}
+	} catch (error) {
+		console.error(error.message);
+		res.status(401).send(error.message);
+	} finally {
+		try {
+			if (connection) {
+				await connection.close();
+				// console.log('Checking for username ended successfully');
+			}
+		} catch (error) {
+			console.error(error.message);
+			res.status(401).send(error.message);
+		}
+	}
+}
+
+app.get('/checkusername/:username', (req, res) => {
+	let username = req.params.username;
+
+	checkforusername(req, res, username);
+});
+
 //Listen to the specific port to connect to the server
 //This is the main part of the backend server
 //When we run the file using node <filename>	command, the file will listen for any type of requests

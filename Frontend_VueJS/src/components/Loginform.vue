@@ -170,10 +170,25 @@
 				<p class="aowner">As a car owner</p>
 				<input type="text" placeholder="User Name" required v-model="cuname" />
 				<input type="text" placeholder="First Name" required v-model="cfname" />
-				<input type="text" placeholder="Last Name" required v-model="clname"/>
-				<input type="password" placeholder="Password" required v-model="cpass"/>
-				<input type="password" placeholder="Confirm Password" required v-model="cconpass" />
-				<input type="date" placeholder="Date of Birth" required v-model="cdob" />
+				<input type="text" placeholder="Last Name" required v-model="clname" />
+				<input
+					type="password"
+					placeholder="Password"
+					required
+					v-model="cpass"
+				/>
+				<input
+					type="password"
+					placeholder="Confirm Password"
+					required
+					v-model="cconpass"
+				/>
+				<input
+					type="date"
+					placeholder="Date of Birth"
+					required
+					v-model="cdob"
+				/>
 				<button class="nextown" id="nextown">NEXT PAGE</button>
 			</form>
 		</div>
@@ -188,8 +203,10 @@
 				<p class="aowner">As a car owner</p>
 				<input type="tel" placeholder="Phone No" required v-model="cphn" />
 				<input type="number" placeholder="NID No" required v-model="cnid" />
-				<input type="number" placeholder="Car Number" required v-model="ccar"/>
-				<button @click ="insertCarOwnerdata" class="finalsign" id="finalsign">SIGN UP</button>
+				<input type="number" placeholder="Car Number" required v-model="ccar" />
+				<button @click="insertCarOwnerdata" class="finalsign" id="finalsign">
+					SIGN UP
+				</button>
 				<!-- <button>GO BACK</button> -->
 			</form>
 		</div>
@@ -226,21 +243,47 @@
 				dnid: '',
 				dcoid: '',
 				dcarid: '',
-				cuname:'',
-				cfname:'',
-				clname:'',
-				cpass:'',
-				cconpass:'',
-				cdob:'',
-				cphn:'',
-				cnid:'',
-				ccar:'',
+				cuname: '',
+				cfname: '',
+				clname: '',
+				cpass: '',
+				cconpass: '',
+				cdob: '',
+				cphn: '',
+				cnid: '',
+				ccar: '',
 				username: '',
-				password: ''
+				password: '',
+				usernameexists: false,
 			};
+		},
+
+		//Watch portion of vuejs automatically runs whenever a change happens in that variable
+		watch: {
+			cluname(newval, oldval) {
+				if (newval !== '') this.checkUsername(newval);
+			},
+			cuname(newval, oldval) {
+				if (newval !== '') this.checkUsername(newval);
+			},
+			duname(newval, oldval) {
+				if (newval !== '') this.checkUsername(newval);
+			},
 		},
 		methods: {
 			...mapMutations['setAuthentication'],
+
+			async checkUsername(just_a_name) {
+				let responsed = await fetch(
+					`http://localhost:5000/checkusername/${just_a_name}`
+				);
+
+				let does_username_exists = await responsed.json();
+
+				if (does_username_exists.found) {
+					this.usernameexists = true;
+				} else this.usernameexists = false;
+			},
 
 			async insertclientdata() {
 				let clientdata = {
@@ -264,24 +307,28 @@
 				} else if (this.clpass != this.clconpass) {
 					alert('Passwords do not match');
 				} else {
-					const something = await fetch(
-						'http://localhost:5000/insertuserclient',
-						{
-							method: 'post',
-							headers: {
-								Accept: 'application/json, text/plain, /',
-								'Content-Type': 'application/json',
-							},
-							body: JSON.stringify(clientdata),
-						}
-					);
-
-					if (something.ok) {
-						alert('Sign up successful');
-						location.reload();
+					if (this.usernameexists) {
+						alert('The username already exists!');
 					} else {
-						alert('Could not sign you up. Please try again');
-						location.reload();
+						const something = await fetch(
+							'http://localhost:5000/insertuserclient',
+							{
+								method: 'post',
+								headers: {
+									Accept: 'application/json, text/plain, /',
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify(clientdata),
+							}
+						);
+
+						if (something.ok) {
+							alert('Sign up successful');
+							location.reload();
+						} else {
+							alert('Could not sign you up. Please try again');
+							location.reload();
+						}
 					}
 				}
 			},
@@ -311,30 +358,33 @@
 				} else if (this.dpass != this.dconpass) {
 					alert('Passwords do not match');
 				} else {
-					const something = await fetch(
-						'http://localhost:5000/insertuserdriver',
-						{
-							method: 'post',
-							headers: {
-								Accept: 'application/json, text/plain, /',
-								'Content-Type': 'application/json',
-							},
-							body: JSON.stringify(driverdata),
-						}
-					);
-
-					if (something.ok) {
-						alert('Sign up successful');
-						location.reload();
+					if (this.usernameexists) {
+						alert('The username already exists!');
 					} else {
-						alert('Could not sign you up. Please try again');
-						location.reload();
+						const something = await fetch(
+							'http://localhost:5000/insertuserdriver',
+							{
+								method: 'post',
+								headers: {
+									Accept: 'application/json, text/plain, /',
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify(driverdata),
+							}
+						);
+
+						if (something.ok) {
+							alert('Sign up successful');
+							location.reload();
+						} else {
+							alert('Could not sign you up. Please try again');
+							location.reload();
+						}
 					}
 				}
 			},
 			async insertCarOwnerdata() {
-
-					let ownerdata = {
+				let ownerdata = {
 					user_name: this.cuname,
 					admin_id: '1010',
 					Name_Fname: this.cfname,
@@ -356,21 +406,25 @@
 				if (isEmpty) {
 					alert('Please enter all of the information!');
 				} else {
-					const something = await fetch(
-						'http://localhost:5000/insertcarowner',
-						{
-							method: 'post',
-							headers: {
-								Accept: 'application/json, text/plain, /',
-								'Content-Type': 'application/json',
-							},
-							body: JSON.stringify(ownerdata),
-						}
-					);
+					if (this.usernameexists) {
+						alert('The username already exists!');
+					} else {
+						const something = await fetch(
+							'http://localhost:5000/insertcarowner',
+							{
+								method: 'post',
+								headers: {
+									Accept: 'application/json, text/plain, /',
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify(ownerdata),
+							}
+						);
 
-					if (something.ok) {
-						alert('Sign up successful');
-						location.reload();
+						if (something.ok) {
+							alert('Sign up successful');
+							location.reload();
+						}
 					}
 				}
 			},
