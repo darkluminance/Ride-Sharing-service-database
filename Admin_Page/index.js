@@ -67,6 +67,7 @@ async function getData(req, res) {
 				'Date of Birth',
 				'Age',
 				'User Type',
+				'      '
 			],
 			rows: result.rows,
 		};
@@ -94,7 +95,7 @@ async function get_ClData(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ['User ID', 'Client Location X', 'Client Location Y'],
+			headers: ['User ID', 'Client Location X', 'Client Location Y','      '],
 			rows: result.rows,
 		};
 
@@ -130,6 +131,7 @@ async function get_DrData(req, res) {
 				'Driver Location X',
 				'Driver Location Y',
 				'Total Earning',
+				'      ',
 			],
 			rows: result.rows,
 		};
@@ -192,6 +194,7 @@ async function get_Trip(req, res) {
 				'Trip Date',
 				'Client ID',
 				'Driver ID',
+				'      ',
 			],
 			rows: result.rows,
 		};
@@ -219,7 +222,7 @@ async function get_CarOwn(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ['User ID', 'Car Rent', 'NID', 'Car Number'],
+			headers: ['User ID', 'Car Rent', 'NID', 'Car Number','      '],
 			rows: result.rows,
 		};
 
@@ -252,6 +255,7 @@ async function get_Car(req, res) {
 				'Car Model',
 				'Car Type',
 				'Percentage',
+				'      ',
 			],
 			rows: result.rows,
 		};

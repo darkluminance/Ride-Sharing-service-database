@@ -8,6 +8,7 @@
     * Populates a data table with some data
     * @param {HTMLDivElement} root
     */
+    //-------------- user info---------------
     async function updateTable(root){
       const table=root.querySelector(".table-ref-data");
       const response=await fetch("http://localhost:5001/Userdata");
@@ -34,7 +35,7 @@
             for (const td of data){
               tablerowdata += `<td>${ td }</td>`;
             }
-            table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
+            table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
           }
     }
@@ -45,6 +46,7 @@
         const response=await fetch("http://localhost:5001/Client");
         const userdata=await response.json();
         console.log(userdata.headers);
+            
 
             //clear data
             table.querySelector("thead tr").innerHTML = "";
@@ -64,13 +66,15 @@
             for(const data of userdata.rows){
               let tablerowdata = "";
               for (const td of data){
-                tablerowdata += `<td>${ td }</td>`;
+                
+                tablerowdata += `<td >${ td }</td>`;
               }
-              table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
+              
             }
       }
-    //---------DRIVER-----------\
+    //---------DRIVER-----------
     async function update_DrTable(root){
         const table=root.querySelector(".table-ref-data");
         const response=await fetch("http://localhost:5001/Driver");
@@ -97,7 +101,7 @@
               for (const td of data){
                 tablerowdata += `<td>${ td }</td>`;
               }
-              table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
             }
       }
@@ -128,7 +132,7 @@
               for (const td of data){
                 tablerowdata += `<td>${ td }</td>`;
               }
-              table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
             }
       }
@@ -159,7 +163,7 @@
               for (const td of data){
                 tablerowdata += `<td>${ td }</td>`;
               }
-              table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
             }
       }
@@ -190,7 +194,7 @@
               for (const td of data){
                 tablerowdata += `<td>${ td }</td>`;
               }
-              table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
             }
       }    //END OF TABLES
@@ -219,7 +223,7 @@
         var trip=document.getElementById('trip');
         var carown=document.getElementById('CarOwn');
         var car=document.getElementById('car');
-
+        
         if(user){
         user.addEventListener("click",function(){
             //  alert("hi");
@@ -256,6 +260,18 @@
                 update_Car(root);
            });
         }
-
+        // var btn=getElementById('deleteBtn');
+        // btn.addEventListener("mouseover",function(){
+        //   style.display="inline";
+        // });
+        // btn.addEventListener("mouseout", function(){
+        //   style.display="none";
+        // });
+        function show(){
+          document.getElementById('deleteBtn').style.display="inline";
+        }
+        function hide(){
+          document.getElementById('deleteBtn').style.display="none";
+        }
     }
 }
