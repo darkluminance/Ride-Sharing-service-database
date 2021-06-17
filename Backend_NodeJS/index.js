@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'MahaDbms',
+	password: 'MahaDbms',
 	connectString: 'localhost/xe',
 };
 

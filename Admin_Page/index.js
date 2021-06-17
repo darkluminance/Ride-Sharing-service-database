@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'ryoko',
-	password: 'ryoko',
+	user: 'MahaDbms',
+	password: 'MahaDbms',
 	connectString: 'localhost/xe',
 };
 
