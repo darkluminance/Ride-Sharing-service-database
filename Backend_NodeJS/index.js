@@ -701,13 +701,15 @@ async function InsertCarOwner(req, res, data, info) {
 						
 						
 						update car_owner
-						set N_ID = '${info[1]}',
+						set N_ID = ${info[1]},
 						Car_ID = '${info[2]}'
 						where U_ID ='${info[0]}';
 					EXCEPTION
 					WHEN OTHERS THEN
 					ROLLBACK TO start_point;
 					END;`;
+
+	console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -887,6 +889,83 @@ app.get('/checkusername/:username', (req, res) => {
 
 	checkforusername(req, res, username);
 });
+
+async function checkforCOUID(req, res, couid) {
+	const query = `select * from userr
+				   where u_id= '${couid}'`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+
+		if (result.rows.length === 0) {
+			res.status(201).send({
+				found: false,
+			});
+		} else {
+			res.status(201).send({
+				found: true,
+			});
+		}
+	} catch (error) {
+		console.error(error.message);
+		res.status(401).send(error.message);
+	} finally {
+		try {
+			if (connection) {
+				await connection.close();
+			}
+		} catch (error) {
+			console.error(error.message);
+			res.status(401).send(error.message);
+		}
+	}
+}
+
+app.get('/checkcarownerid/:couid', (req, res) => {
+	let couid = req.params.couid;
+
+	checkforCOUID(req, res, couid);
+});
+
+
+async function checkforCarNo(req, res, carno) {
+	const query = `select * from car
+				   where car_no = '${carno}'`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+
+		if (result.rows.length === 0) {
+			res.status(201).send({
+				found: false,
+			});
+		} else {
+			res.status(201).send({
+				found: true,
+			});
+		}
+	} catch (error) {
+		console.error(error.message);
+		res.status(401).send(error.message);
+	} finally {
+		try {
+			if (connection) {
+				await connection.close();
+			}
+		} catch (error) {
+			console.error(error.message);
+			res.status(401).send(error.message);
+		}
+	}
+}
+app.get('/checkcarno/:carno', (req, res) => {
+	let carno = req.params.carno;
+	console.log(`CHECKCHEKCHEK ${carno}`);
+	checkforCarNo(req, res, carno);
+});
+
 
 //Listen to the specific port to connect to the server
 //This is the main part of the backend server
