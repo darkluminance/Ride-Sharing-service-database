@@ -874,6 +874,7 @@ async function checkforusername(req, res, un) {
 				await connection.close();
 				// console.log('Checking for username ended successfully');
 			}
+			res.status(201).send();
 		} catch (error) {
 			console.error(error.message);
 			res.status(401).send(error.message);

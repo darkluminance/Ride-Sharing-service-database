@@ -70,6 +70,10 @@
 		</AcceptRequestMenuClientt>
 	</div>
 
+	<div class="carowner" v-if="userdata.type === 'CO'">
+		<CarOwner></CarOwner>
+	</div>
+
 	<!-- Loading screen -->
 	<div v-if="!loaded" class="loading">
 		<div>
@@ -96,6 +100,7 @@
 	import TripSummary from '../components/TripSummary.vue';
 	import AcceptRequestMenu from '../components/AcceptRequestMenu.vue';
 	import AcceptRequestMenuClientt from '../components/AcceptRequestMenuClientt.vue';
+	import CarOwner from '../components/CarOwner.vue';
 	import { io } from 'socket.io-client';
 	import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
 
@@ -116,6 +121,7 @@
 			TripSummary,
 			AcceptRequestMenu,
 			AcceptRequestMenuClientt,
+			CarOwner,
 		},
 
 		data() {
@@ -559,6 +565,8 @@
 				}, 1800); */
 			},
 
+			getCarOwnerData() {},
+
 			async getDriverData() {
 				let udata = null;
 
@@ -634,13 +642,14 @@
 
 			//Now after 800ms search the database for the cliver data of that user id
 			setTimeout(() => {
-				this.getCliverData();
+				if (!this.userdata.type === 'CO') this.getCliverData();
 			}, 1300);
 
 			//Now after 800ms search the database for the client or driver data of that user id
 			setTimeout(() => {
 				// console.log(this.userdata.type, 'ummmm');
 				if (this.userdata.type === 'D') this.getDriverData();
+				if (this.userdata.type === 'CO') this.getCarOwnerData();
 			}, 1800);
 
 			this.$store.commit('setTripType', 'Standard');
@@ -692,5 +701,10 @@
 	}
 
 	.requestfound {
+	}
+	.carowner {
+		/* width: 100vw;
+		height: 100vh;
+		margin: 0; */
 	}
 </style>
