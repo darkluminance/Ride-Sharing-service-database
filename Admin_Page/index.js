@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'MahaDbms',
+	password: 'MahaDbms',
 	connectString: 'localhost/xe',
 };
 
@@ -210,7 +210,7 @@ async function get_Car(req,res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ["Car Number","Car Color","Car Model","Car Type","Percentage","Car Owner ID"],
+			headers: ["Car Number","Car Color","Car Model","Car Type","Percentage"],
 			rows: result.rows,
 		}
 
