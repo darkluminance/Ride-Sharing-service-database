@@ -148,12 +148,12 @@
 				<input type="tel" placeholder="Phone No" required v-model="dphn" />
 				<input type="number" placeholder="NID No" required v-model="dnid" />
 				<input
-					type="number"
+					type="text"
 					placeholder="Car Owner ID"
 					required
 					v-model="dcoid"
 				/>
-				<input type="number" placeholder="Car ID" required v-model="dcarid" />
+				<input type="text" placeholder="Car ID" required v-model="dcarid" />
 				<button @click="insertDriverdata" id="drisign">SIGN UP</button>
 				<!-- <button>GO BACK</button> -->
 			</form>
@@ -203,7 +203,7 @@
 				<p class="aowner">As a car owner</p>
 				<input type="tel" placeholder="Phone No" required v-model="cphn" />
 				<input type="number" placeholder="NID No" required v-model="cnid" />
-				<input type="number" placeholder="Car Number" required v-model="ccar" />
+				<input type="text" placeholder="Car Number" required v-model="ccar" />
 				<button @click="insertCarOwnerdata" class="finalsign" id="finalsign">
 					SIGN UP
 				</button>
@@ -255,6 +255,8 @@
 				username: '',
 				password: '',
 				usernameexists: false,
+				COUIDexists: false,
+				CARExists: false
 			};
 		},
 
@@ -269,6 +271,15 @@
 			duname(newval, oldval) {
 				if (newval !== '') this.checkUsername(newval);
 			},
+			dcoid(newval, oldval) {
+				if (newval !== '') this.checkCarOwnerID(newval);
+			},
+			dcarid(newval, oldval) {
+				if (newval !== '') this.checkCarNo(newval);
+			},
+			ccar(newval, oldval) {
+				if (newval !== '') this.checkCarNo(newval);
+			}
 		},
 		methods: {
 			...mapMutations['setAuthentication'],
@@ -283,6 +294,28 @@
 				if (does_username_exists.found) {
 					this.usernameexists = true;
 				} else this.usernameexists = false;
+			},
+
+			async checkCarOwnerID(id) {
+				let responsed = await fetch(
+					`http://localhost:5000/checkcarownerid/${id}`
+				);
+
+				let id_exists = await responsed.json();
+				if (id_exists.found) {
+					this.COUIDexists = true;
+				} else this.COUIDexists = false;
+			},
+
+			async checkCarNo(id) {
+				let responsed = await fetch(
+					`http://localhost:5000/checkcarno/${id}`
+				);
+
+				let id_exists = await responsed.json();
+				if (id_exists.found) {
+					this.Carexists = true;
+				} else this.Carexists = false;
 			},
 
 			async insertclientdata() {
@@ -357,9 +390,21 @@
 					alert('Please enter all of the information!');
 				} else if (this.dpass != this.dconpass) {
 					alert('Passwords do not match');
-				} else {
-					if (this.usernameexists) {
+				}  else {
+					if(this.COUIDexists===false)
+					{
+						// console.log(`HAGA ${this.COUIDexists}`);
+						alert('The Car Owner ID does not exist!');
+						
+					}
+					else if(this.Carexists===false)
+					{
+						alert('The Car Number does not exist!');
+					}
+					else if (this.usernameexists) {
+						// console.log(`ANOTHER HAGA ${this.usernameexists}`);
 						alert('The username already exists!');
+						
 					} else {
 						const something = await fetch(
 							'http://localhost:5000/insertuserdriver',
@@ -406,7 +451,12 @@
 				if (isEmpty) {
 					alert('Please enter all of the information!');
 				} else {
-					if (this.usernameexists) {
+					if(this.Carexists===false)
+					{
+						console.log(`CARRRRROWNERRHAGA ${this.Carexists}`);
+						alert('The Car Number does not exist!');
+					}
+					else if (this.usernameexists) {
 						alert('The username already exists!');
 					} else {
 						const something = await fetch(
