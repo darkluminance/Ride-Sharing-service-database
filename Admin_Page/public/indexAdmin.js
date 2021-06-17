@@ -38,28 +38,28 @@
 
           }
     }
-  
-    //-----------CLIENT-----------    
+
+    //-----------CLIENT-----------
     async function update_ClTable(root){
         const table=root.querySelector(".table-ref-data");
         const response=await fetch("http://localhost:5001/Client");
         const userdata=await response.json();
         console.log(userdata.headers);
-  
+
             //clear data
             table.querySelector("thead tr").innerHTML = "";
             table.querySelector("tbody").innerHTML = "";
-  
+
             //populate headers
-  
-  
+
+
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
-  
+
             }
-  
-  
-  
+
+
+
             //populate data
             for(const data of userdata.rows){
               let tablerowdata = "";
@@ -67,7 +67,7 @@
                 tablerowdata += `<td>${ td }</td>`;
               }
               table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
-  
+
             }
       }
     //---------DRIVER-----------\
@@ -76,21 +76,21 @@
         const response=await fetch("http://localhost:5001/Driver");
         const userdata=await response.json();
         console.log(userdata.headers);
-  
+
             //clear data
             table.querySelector("thead tr").innerHTML = "";
             table.querySelector("tbody").innerHTML = "";
-  
+
             //populate headers
-  
-            
+
+
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
-  
+
             }
-  
-  
-  
+
+
+
             //populate data
             for(const data of userdata.rows){
               let tablerowdata = "";
@@ -98,7 +98,7 @@
                 tablerowdata += `<td>${ td }</td>`;
               }
               table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
-  
+
             }
       }
     //---------TRIP-----------\
@@ -107,21 +107,21 @@
         const response=await fetch("http://localhost:5001/Trip");
         const userdata=await response.json();
         console.log(userdata.headers);
-  
+
             //clear data
             table.querySelector("thead tr").innerHTML = "";
             table.querySelector("tbody").innerHTML = "";
-  
+
             //populate headers
-  
-  
+
+
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
-  
+
             }
-  
-  
-  
+
+
+
             //populate data
             for(const data of userdata.rows){
               let tablerowdata = "";
@@ -129,30 +129,30 @@
                 tablerowdata += `<td>${ td }</td>`;
               }
               table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
-  
+
             }
-      } 
+      }
       //---------CAR_OWNER-----------\
     async function update_CarOwn(root){
         const table=root.querySelector(".table-ref-data");
         const response=await fetch("http://localhost:5001/CarOwn");
         const userdata=await response.json();
         console.log(userdata.headers);
-  
+
             //clear data
             table.querySelector("thead tr").innerHTML = "";
             table.querySelector("tbody").innerHTML = "";
-  
+
             //populate headers
-  
-            
+
+
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
-  
+
             }
-  
-  
-  
+
+
+
             //populate data
             for(const data of userdata.rows){
               let tablerowdata = "";
@@ -160,30 +160,30 @@
                 tablerowdata += `<td>${ td }</td>`;
               }
               table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
-  
+
             }
-      } 
+      }
         //---------CAR-----------\
     async function update_Car(root){
         const table=root.querySelector(".table-ref-data");
         const response=await fetch("http://localhost:5001/Car");
         const userdata=await response.json();
         console.log(userdata.headers);
-  
+
             //clear data
             table.querySelector("thead tr").innerHTML = "";
             table.querySelector("tbody").innerHTML = "";
-  
+
             //populate headers
-  
-  
+
+
             for (var index in userdata.headers) {
                 table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
-  
+
             }
-  
-  
-  
+
+
+
             //populate data
             for(const data of userdata.rows){
               let tablerowdata = "";
@@ -191,7 +191,7 @@
                 tablerowdata += `<td>${ td }</td>`;
               }
               table.querySelector("tbody").insertAdjacentHTML("afterbegin" , `<tr>${tablerowdata}</tr>`);
-  
+
             }
       }    //END OF TABLES
 
