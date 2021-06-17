@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'MahaDbms',
-	password: 'MahaDbms',
+	user: 'talkinghead',
+	password: 'talk',
 	connectString: 'localhost/xe',
 };
 
@@ -59,15 +59,21 @@ async function getData(req, res) {
 
 		udata = {
 			headers: [
+				
 				'User ID',
 				'User Name',
-				'First Name',
-				'Last Name',
+				'Name',
+				'User Type',
 				'Phone',
 				'Date of Birth',
+<<<<<<< Updated upstream
 				'Age',
 				'User Type',
 				'      '
+=======
+				'Age'
+			
+>>>>>>> Stashed changes
 			],
 			rows: result.rows,
 		};
@@ -85,7 +91,11 @@ async function getData(req, res) {
 }
 ///------------Clientt---------------
 async function get_ClData(req, res) {
-	const query = `select * from clientt`;
+	const query = ` SELECT  u.U_ID, u.User_name, u.Name_Fname ||' '|| u.Name_Lname as "Client Name", u.age,'('||c.C_Location_X ||', '|| c.C_Location_Y||')'  as "Location", cl.Total_Rating, cl.Total_Trips
+					from userr u
+					inner join clientt c ON u.U_ID = C.U_ID 
+					inner join cliver cl ON C.U_ID = Cl.U_ID
+					ORDER BY substr(u.u_ID, 1, 2) desc, substr(u.u_ID, 3) desc`;
 	var udata = null;
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -95,7 +105,11 @@ async function get_ClData(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
+<<<<<<< Updated upstream
 			headers: ['User ID', 'Client Location X', 'Client Location Y','      '],
+=======
+			headers: ['Client ID', 'User Name','Client Name','Age', 'Client Location', 'Total Ratings', 'Total Trips'],
+>>>>>>> Stashed changes
 			rows: result.rows,
 		};
 
