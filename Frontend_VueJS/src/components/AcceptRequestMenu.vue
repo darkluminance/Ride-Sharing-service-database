@@ -11,7 +11,7 @@
 			<div class="profilecircle"><i class="fas fa-user"></i></div>
 			<div class="driverinfo">
 				<h2>{{ drivername }}</h2>
-				<h3><i class="fas fa-star"></i> {{ driverrating.toFixed(1) }}</h3>
+				<h3><i class="fas fa-star"></i> {{ driverrating.toFixed(1)}}</h3>
 			</div>
 			<p>{{ driverphone }}</p>
 		</div>

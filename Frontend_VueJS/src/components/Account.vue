@@ -71,7 +71,8 @@
 	</div>
 
 	<div class="carowner" v-if="userdata.type === 'CO'">
-		<CarOwner></CarOwner>
+
+		<CarOwner :owner_id="uid"></CarOwner>
 	</div>
 
 	<!-- Loading screen -->
@@ -429,6 +430,7 @@
 					drop_off_name: destinationLocationName,
 					trip_type: the_trip_type,
 				};
+				console.log(tripData);
 
 				let insertTrip = await fetch('http://localhost:5000/trip', {
 					method: 'post',

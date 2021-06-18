@@ -71,7 +71,9 @@
 						:key="driveritem.username"
 						class="caritem"
 					>
+						<h2>Driver User Name: {{ driveritem.username }}</h2>
 						<h2>Driver Name: {{ driveritem.name }}</h2>
+						<h2>Total Earning: {{ driveritem.total_earning }}</h2>
 						<h2>Car using: {{ driveritem.car }}</h2>
 					</div>
 				</div>
@@ -88,38 +90,77 @@
 				couname: '',
 				cophn: '',
 				codob: '',
-				coage: 102,
-				coearn: 420,
+				coage: 0,
+				coearn: 0,
 				cocars: [],
 				codrivers: [],
 				activemenu: 1,
 			};
 		},
+		props: {
+			owner_id: ''
+
+		},
 		methods: {
+			async GetCarOwnerData() {
+
+				let fetched = await fetch(`http://localhost:5000/getcarownerdata/${this.owner_id}`);
+				let theresponse = await fetched.json();
+				console.log(theresponse);
+
+				this.couname = theresponse[0][1],
+				this.coname = theresponse[0][2],
+				this.codob = theresponse[0][3],
+				this.coage = theresponse[0][4],
+				this.cophn = theresponse[0][5],
+				this.coearn = theresponse[0][6]
+				
+			},
+
+			async GetCarOwnerCar() {
+
+			let fetched = await fetch(`http://localhost:5000/getcarownercar/${this.owner_id}`);
+			let theresponse = await fetched.json();
+			console.log(theresponse);
+				this.cocars = [
+				{
+					carno : theresponse[0][0] ,
+					carcolor :  theresponse[0][1],
+					carmodel : theresponse[0][2],
+					cartype :  theresponse[0][3]
+				},
+			];
+			},
+
+			async GetCarOwnerDriver() {
+
+			let fetched = await fetch(`http://localhost:5000/getcarownerdriver/${this.owner_id}`);
+			let theresponse = await fetched.json();
+			console.log(theresponse);
+				this.codrivers = [
+				{
+					username: theresponse[0][0],
+					name:  theresponse[0][1],
+					total_earning: theresponse[0][2],
+					car: theresponse[0][3]
+				},
+			];
+			},
+			
+
 			logoutUser() {
 				localStorage.removeItem('token');
 				location.reload();
 			},
 			changeactivemenu(mi) {
 				this.activemenu = mi;
-			},
+			}
 		},
 		mounted() {
-			this.cocars = [
-				{
-					carno: 'DHAKA-D-11-9999-111',
-					carcolor: 'white',
-					carmodel: 'X corolla',
-					cartype: 'Car_X(Affordable)',
-				},
-			];
-			this.codrivers = [
-				{
-					username: 'arthur',
-					name: 'Arthur Shelby',
-					car: 'DHAKA-D-11-9999-111',
-				},
-			];
+
+			this.GetCarOwnerData(),
+			this.GetCarOwnerCar(),
+			this.GetCarOwnerDriver()
 		},
 	};
 </script>

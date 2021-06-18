@@ -65,7 +65,7 @@ async function getUserData(req, res, uid) {
 async function getCliverData(req, res, uid) {
 	//Oracle query for getting data from userr table
 	const query = `SELECT u_id, total_rating, total_trips from Cliver WHERE u_id = '${uid}'`;
-	console.log(query);
+	// console.log(query);
 
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -552,14 +552,44 @@ async function sendTripData(req, res, data) {
 						set total_trips= total_trips+1
 						where U_ID =  '${data[13]}';
 						
-
 						update driver
-						set total_earning = total_earning + ${data[4]}
+						set total_earning = total_earning + ${data[4]}*(1-(select percentage
+						from car
+						where car_no = (select car_no
+										from driver
+										where u_id =  '${data[13]}') )/100)
 						where U_ID = '${data[13]}'; 
+
+						update car_owner
+						set owner_earning = owner_earning + ${data[4]}*((select percentage
+						from car
+						where car_no = (select car_no
+										from driver
+										where u_id =  '${data[13]}') )/100)
+						where U_ID = (select couid
+									from car where car_no = (select car_no
+									from driver
+									where u_id = '${data[13]}')); 
+
+
+						insert into Company_Bill(COU_ID, Bill_ID, Bill_Month, Bill_Date, profit_amount) 
+						values(( select couid
+							from car where car_no = (select car_no
+							from driver
+							where u_id = '${data[13]}')),
+							substr(CONCAT( 'BILL_', concat(to_char(sysdate, 'dd-mon-yyyy'), concat('_', sys_guid())  )), 1, 32), to_char(sysdate, 'Month'), to_date(sysdate, 'dd-mon-yy'),
+						((select percentage
+						from car
+						where car_no = (select car_no
+										from driver
+										where u_id =  '${data[13]}') )/100) * ${data[4]}*.25
+						
+						);			
 						
 						COMMIT;
 					EXCEPTION
 						WHEN OTHERS THEN
+						dbms_output.put_line('Error code ' || SQLCODE || ': ' || SQLERRM);
 						ROLLBACK TO start_point1;
 					END;`;
 
@@ -771,6 +801,94 @@ app.post('/insertcarowner', (req, res) => {
 	console.log(`${senddata}`);
 });
 
+async function ShowOwnerProfile(req, res, owner_id) {
+	const query = `SELECT  u.U_ID, u.User_name, u.Name_Fname ||' '|| u.Name_Lname as "Car owner Name",to_char(u.dob,'dd-mm-yyyy'), u.age, u.phone_no,c.owner_earning,c.N_ID
+				   from userr u inner join car_owner c on u.u_id='${owner_id}' and u.u_id = c.u_id`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+	} catch (error) {
+		res.status(401).send({
+			message: 'Could not fetch data from car owner',
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			res.status(200).send(result.rows);
+		}
+	}
+}
+
+app.get('/getcarownerdata/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+
+	console.log(owner_id);
+	ShowOwnerProfile(request, response, owner_id);
+});
+
+
+
+
+async function ShowOwnerCars(req, res, owner_id) {
+
+	const query = `select * from car
+	where COUID ='${owner_id}'`;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+	} catch (error) {
+		res.status(401).send({
+			message: 'Could not fetch data from car owner',
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			res.status(200).send(result.rows);
+		}
+	}
+}
+
+app.get('/getcarownercar/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+
+	console.log(owner_id);
+	ShowOwnerCars(request, response, owner_id);
+});
+
+
+async function ShowOwnerDrivers(req, res, owner_id) {
+
+	const query = ` SELECT u.User_name, u.Name_Fname ||' '|| u.Name_Lname as "Driver Name",d.total_earning,d.Car_no    
+					from Userr u, driver d
+					where u.u_ID = (select dru_id 
+					from hire
+					where cou_id= '${owner_id}') and u.u_id = d.u_id`;
+ console.log(query);
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+	} catch (error) {
+		res.status(401).send({
+			message: 'Could not fetch data from car owner',
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			res.status(200).send(result.rows);
+		}
+	}
+}
+
+app.get('/getcarownerdriver/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+	console.log(owner_id);
+	ShowOwnerDrivers(request, response, owner_id);
+});
+
+
 //
 //
 //
@@ -811,7 +929,7 @@ app.get('/getdriverdata/:id', (request, response) => {
 //GET request for getting cliver data
 app.get('/getcliverdata/:id', (request, response) => {
 	const usid = request.params.id; //ID is the user id using which we'll search the database
-	console.log(usid);
+
 	getCliverData(request, response, usid);
 });
 
