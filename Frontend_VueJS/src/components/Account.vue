@@ -87,7 +87,7 @@
 	</div>
 
 	<!-- Trip Summary Card -->
-	<TripSummary @rateabitchh="insertrating" v-if="showtripsummary"></TripSummary>
+	<TripSummary @rate="insertrating" v-if="showtripsummary"></TripSummary>
 </template>
 
 <script>
@@ -642,7 +642,7 @@
 
 			//Now after 800ms search the database for the cliver data of that user id
 			setTimeout(() => {
-				if (!this.userdata.type === 'CO') this.getCliverData();
+				if (this.userdata.type !== 'CO') this.getCliverData();
 			}, 1300);
 
 			//Now after 800ms search the database for the client or driver data of that user id

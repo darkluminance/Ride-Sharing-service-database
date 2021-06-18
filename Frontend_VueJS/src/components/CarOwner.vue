@@ -84,10 +84,10 @@
 	export default {
 		data() {
 			return {
-				coname: 'Thomas Shelby',
-				couname: 'tommy',
-				cophn: '4646465456',
-				codob: '11/11/1912',
+				coname: '',
+				couname: '',
+				cophn: '',
+				codob: '',
 				coage: 102,
 				coearn: 420,
 				cocars: [],

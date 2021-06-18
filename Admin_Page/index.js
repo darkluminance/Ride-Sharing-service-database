@@ -46,6 +46,11 @@ const userdata = {
 		];
 	}),
 };
+
+
+
+
+
 ///USERS INFO
 async function getData(req, res) {
 	const query = `select * from user_view`;
@@ -66,14 +71,8 @@ async function getData(req, res) {
 				'User Type',
 				'Phone',
 				'Date of Birth',
-<<<<<<< Updated upstream
 				'Age',
-				'User Type',
 				'      '
-=======
-				'Age'
-			
->>>>>>> Stashed changes
 			],
 			rows: result.rows,
 		};
@@ -105,12 +104,10 @@ async function get_ClData(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-<<<<<<< Updated upstream
-			headers: ['User ID', 'Client Location X', 'Client Location Y','      '],
-=======
-			headers: ['Client ID', 'User Name','Client Name','Age', 'Client Location', 'Total Ratings', 'Total Trips'],
->>>>>>> Stashed changes
-			rows: result.rows,
+
+			headers: ['Client ID', 'User Name','Client Name','Age', 'Client Location', 'Total Ratings', 'Total Trips', '      '],
+			rows: result.rows
+			
 		};
 
 		console.log('Connected');

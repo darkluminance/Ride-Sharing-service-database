@@ -65,7 +65,7 @@
 			welcomep1: '', //Text to show if user is Client
 			welcomep2: '', //Text to show if user is Driver
 			type: '', //Type of User
-			myrating: null,
+			myrating: 0,
 		},
 		components: {
 			ProfileCard,
@@ -111,7 +111,11 @@
 							? 5
 							: this.cliverdata.total_rating / this.cliverdata.total_trips
 					);
+				// console.log(this.myrating);
+				// console.log(this.cliverdata.total_rating);
 			}, 1000);
+
+			
 		},
 	};
 </script>

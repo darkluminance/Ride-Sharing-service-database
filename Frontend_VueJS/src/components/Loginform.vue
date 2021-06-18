@@ -453,7 +453,7 @@
 				} else {
 					if(this.Carexists===false)
 					{
-						console.log(`CARRRRROWNERRHAGA ${this.Carexists}`);
+						console.log(`${this.Carexists}`);
 						alert('The Car Number does not exist!');
 					}
 					else if (this.usernameexists) {

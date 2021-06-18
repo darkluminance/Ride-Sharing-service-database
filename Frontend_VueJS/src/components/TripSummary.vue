@@ -23,19 +23,19 @@
 		</div>
 
 		<div class="ratingbtn">
-			<button style="background: #6c5ce7" @click="rateabitch(1)">
+			<button style="background: #6c5ce7" @click="rate(1)">
 				1
 			</button>
-			<button style="background: #6c5ce7" @click="rateabitch(2)">
+			<button style="background: #6c5ce7" @click="rate(2)">
 				2
 			</button>
-			<button style="background: #6c5ce7" @click="rateabitch(3)">
+			<button style="background: #6c5ce7" @click="rate(3)">
 				3
 			</button>
-			<button style="background: #6c5ce7" @click="rateabitch(4)">
+			<button style="background: #6c5ce7" @click="rate(4)">
 				4
 			</button>
-			<button style="background: #6c5ce7" @click="rateabitch(5)">
+			<button style="background: #6c5ce7" @click="rate(5)">
 				5
 			</button>
 		</div>
@@ -50,8 +50,8 @@
 		},
 		computed: {},
 		methods: {
-			rateabitch(givenrating) {
-				this.$emit('rateabitchh', givenrating);
+			rate(givenrating) {
+				this.$emit('rate', givenrating);
 			},
 		},
 	};

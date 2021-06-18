@@ -65,7 +65,7 @@ async function getUserData(req, res, uid) {
 async function getCliverData(req, res, uid) {
 	//Oracle query for getting data from userr table
 	const query = `SELECT u_id, total_rating, total_trips from Cliver WHERE u_id = '${uid}'`;
-	// console.log(query);
+	console.log(query);
 
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -331,9 +331,12 @@ async function UserDriver(req, res, data, info) {
 						
 						update driver
 						set NID = '${info[1]}',
-						COID = '${info[2]}',
-						Car_ID = '${info[3]}'
+						Car_no = '${info[3]}'
 						where U_ID ='${info[0]}';
+
+						insert into hire (dru_id, cou_id)
+						values ('${info[0]}','${info[2]}');
+
 					EXCEPTION
 					WHEN OTHERS THEN
 					ROLLBACK TO start_point;
@@ -698,14 +701,18 @@ async function InsertCarOwner(req, res, data, info) {
 						values('${data[0]}','${data[1]}',(SELECT u_id FROM(SELECT u_id FROM userr where admin_id is null ORDER BY dbms_random.value) WHERE rownum = 1),
 						'${data[3]}','${data[4]}','${data[5]}',to_date('${data[6]}','yyyy-mm-dd'), TRUNC(TO_NUMBER(SYSDATE - TO_DATE('${data[6]}','yyyy-mm-dd')) / 365.25), '${data[7]}','${data[8]}');
 						
-						
-						
+						update car
+						set couid = '${data[0]}'
+						where car_no = '${info[2]}';
+
 						update car_owner
-						set N_ID = ${info[1]},
-						Car_ID = '${info[2]}'
+						set N_ID = ${info[1]}
 						where U_ID ='${info[0]}';
+
+						
 					EXCEPTION
 					WHEN OTHERS THEN
+					dbms_output.put_line('Error code ' || SQLCODE || ': ' || SQLERRM);
 					ROLLBACK TO start_point;
 					END;`;
 
@@ -804,7 +811,7 @@ app.get('/getdriverdata/:id', (request, response) => {
 //GET request for getting cliver data
 app.get('/getcliverdata/:id', (request, response) => {
 	const usid = request.params.id; //ID is the user id using which we'll search the database
-
+	console.log(usid);
 	getCliverData(request, response, usid);
 });
 
