@@ -262,9 +262,9 @@
 			this.GetCarOwnerData();
 			this.GetCarOwnerCar(); 
 			this.GetCarOwnerDriver(); 
-			setTimeout(() => {
-				this.GetCarOwnerDailyEarning();
-			}, 800);
+			// setTimeout(() => {
+			// 	this.GetCarOwnerDailyEarning();
+			// }, 800);
 			
 			this.GetCarOwnerTrips();
 			setTimeout(() => {
