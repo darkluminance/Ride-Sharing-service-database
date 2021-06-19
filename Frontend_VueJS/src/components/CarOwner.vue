@@ -51,11 +51,11 @@
 		<div v-if="activemenu === 1" class="carownerprofile">
 			<h1>Car Owner Profile</h1>
 
-			<div style="margin-top: 3rem;">
+			<div style="margin-top: 3rem;" class="userprofile">
 				<h1>{{ coname }}</h1>
-				<h2>Phone No: {{ cophn }}</h2>
-				<h2>Date of Birth: {{ codob }}</h2>
-				<h1>Total Earning: Tk. {{ coearn }}</h1>
+				<p id="userphn">Phone No: {{ cophn }}</p>
+				<p id="userdob">Date of Birth: {{ codob }}</p>
+				<p id="userearn">Total Earning: Tk. {{ coearn }}</p>
 			</div>
 		</div>
 
@@ -86,13 +86,17 @@
 					<div
 						v-for="driveritem in codrivers"
 						:key="driveritem.username"
-						class="caritem"
+						class="driveritem"
 					>
 						<h1>Driver</h1>
-						<p>Driver User Name: {{ driveritem.username }}</p>
-						<p>Driver Name: {{ driveritem.name }}</p>
-						<p>Total Earning: {{ driveritem.total_earning }}</p>
-						<p>Car using: {{ driveritem.car }}</p>
+						<br /><br />
+						<p><strong>Driver Username: </strong>{{ driveritem.username }}</p>
+						<p><strong>Driver Name: </strong>{{ driveritem.name }}</p>
+						<!-- <p>Total Earning: {{ driveritem.total_earning }}</p> -->
+						<p><strong>Phone No: </strong>{{ driveritem.phone }}</p>
+						<p><strong>Date of Birth: </strong>{{ driveritem.date }}</p>
+						<p><strong>Age: </strong>{{ driveritem.age }}</p>
+						<p><strong>Car using: </strong>{{ driveritem.car }}</p>
 					</div>
 				</div>
 			</div>
@@ -108,15 +112,15 @@
 						:key="earningitem.date"
 						class="earningitem"
 					>
-						<h1>Driver</h1>
-						<p>Total Earning: {{ earningitem.date}}</p>
+						<!-- <h1>Driver</h1> -->
+						<p>Total Earning: {{ earningitem.date }}</p>
 						<p>Car using: {{ earningitem.earning }}</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
-			<div v-if="activemenu === 5" class="trips">
+		<div v-if="activemenu === 5" class="trips">
 			<h1>Trips</h1>
 
 			<div style="margin-top: 3rem;">
@@ -127,7 +131,7 @@
 						class="tripitem"
 					>
 						<h1>Driver</h1>
-						<p>Trip ID: {{ tripitem.tripid}}</p>
+						<p>Trip ID: {{ tripitem.tripid }}</p>
 						<p>Trip Date: {{ tripitem.date }}</p>
 						<p>Time: {{ tripitem.time }}</p>
 						<p>Driver Name: {{ tripitem.drivername }}</p>
@@ -139,7 +143,6 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
 </template>
 
@@ -157,7 +160,7 @@
 				codrivers: [],
 				activemenu: 1,
 				earning: [],
-				triptable: []
+				triptable: [],
 			};
 		},
 		props: {
@@ -207,8 +210,11 @@
 						name: element[1],
 						total_earning: element[2],
 						car: element[3],
+						phone: element[4],
+						date: element[5],
+						age: element[6],
 					});
-				}); 
+				});
 			},
 
 			async GetCarOwnerDailyEarning() {
@@ -220,9 +226,9 @@
 				theresponse.forEach((element) => {
 					this.earning.push({
 						date: element[0],
-						earning: element[1]
+						earning: element[1],
 					});
-				}); 
+				});
 			},
 			async GetCarOwnerTrips() {
 				let fetched = await fetch(
@@ -238,12 +244,11 @@
 						drivername: element[3],
 						clientname: element[4],
 						pickuplocation: element[5],
-						destlocation:element[6],
-						fare: element[7]
+						destlocation: element[6],
+						fare: element[7],
 					});
-				}); 
+				});
 			},
-
 
 			logoutUser() {
 				localStorage.removeItem('token');
@@ -255,17 +260,19 @@
 		},
 		mounted() {
 			this.GetCarOwnerData();
-			this.GetCarOwnerCar(); 
-			this.GetCarOwnerDriver(); 
-			this.GetCarOwnerDailyEarning();
+			this.GetCarOwnerCar();
+			this.GetCarOwnerDriver();
 			this.GetCarOwnerTrips();
+			setTimeout(() => {
+				this.GetCarOwnerDailyEarning();
+			}, 800);
 		},
 	};
 </script>
 
 <style scope>
 	body {
-		/* background: #eee !important; */
+		background: #eee !important;
 	}
 	.carcontainer {
 		background: #eee;
@@ -282,6 +289,8 @@
 		grid-column-start: 1;
 		grid-column-end: 1;
 		text-align: left;
+		min-width: 250px;
+		max-width: 250px;
 
 		padding: 10%;
 	}
@@ -289,14 +298,14 @@
 	.carownercars,
 	.dailyearning,
 	.carownerdrivers,
-	.dailyearning,
 	.trips {
 		/* height: 100vh; */
 		margin: 0;
-		padding: 5%;
+		padding-top: 5%;
 		/* position: relative; */
 		grid-column-start: 2;
 		grid-column-end: 6;
+		width: calc(100vw - 250px);
 	}
 	.navcontainer img#uberlogo {
 		width: 108px;
@@ -323,5 +332,52 @@
 	}
 	.dashboarditems .selected {
 		color: rgb(78, 78, 78);
+	}
+
+	.drivers {
+		display: flex;
+		justify-content: center;
+	}
+
+	.driveritem {
+		width: 350px;
+		height: 420px;
+		padding: 2rem;
+		margin: 2rem;
+		background: #e1e1e1;
+		color: rgb(88, 88, 88);
+	}
+	.driveritem p {
+		text-align: left;
+	}
+
+	.userprofile {
+		/* width: 420px;
+		height: 500px; */
+		padding: 1rem;
+		padding-top: 5rem;
+		padding-bottom: 8rem;
+		margin: 2rem;
+		margin-left: 30%;
+		margin-right: 30%;
+		background: #e1e1e1;
+		color: rgb(88, 88, 88);
+	}
+	.userprofile h1 {
+		font-size: 2.5rem;
+	}
+	#userphn {
+		font-size: 1.3rem;
+	}
+	#userdob {
+		font-size: 1rem;
+	}
+	#userearn {
+		font-size: 1.5rem;
+	}
+	#userphn,
+	#userdob,
+	#userearn {
+		padding: 5px;
 	}
 </style>

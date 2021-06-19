@@ -10,7 +10,6 @@
 <style>
 	@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
 	body {
-		background: url('assets/mappo.jpg') !important;
 		margin: 0;
 		padding: 0;
 	}

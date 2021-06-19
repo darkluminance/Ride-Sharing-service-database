@@ -724,7 +724,8 @@
 		position: fixed;
 		z-index: -30;
 		background-color: white;
-		opacity: 0.5;
+		background: url('../assets/mappo.jpg') !important;
+		opacity: 0.95;
 		filter: blur(8px);
 		-webkit-filter: blur(8px);
 	}

@@ -578,7 +578,7 @@ async function sendTripData(req, res, data) {
 							from car where car_no = (select car_no
 							from driver
 							where u_id = '${data[13]}')),
-							substr(CONCAT( 'BILL_', concat(to_char(sysdate, 'dd-mon-yyyy'), concat('_', sys_guid())  )), 1, 32), to_char(sysdate, 'Month'), to_date(sysdate, 'dd-mon-yy'),
+							substr(CONCAT( 'BILL_', concat(to_char(sysdate, 'dd-mm-yy'), concat('_', sys_guid())  )), 1, 32), to_char(sysdate, 'Month'), to_date(sysdate, 'dd-mon-yy'),
 						((select percentage
 						from car
 						where car_no = (select car_no
@@ -824,14 +824,14 @@ async function ShowOwnerProfile(req, res, owner_id) {
 app.get('/getcarownerdata/:owner_id', (request, response) => {
 	const owner_id = request.params.owner_id;
 
-	console.log(owner_id);
+	// console.log(owner_id);
 	ShowOwnerProfile(request, response, owner_id);
 });
 
 async function ShowOwnerCars(req, res, owner_id) {
 	const query = ` select * from car
 					where COUID ='${owner_id}'`;
-					console.log(query);
+	console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -851,17 +851,17 @@ async function ShowOwnerCars(req, res, owner_id) {
 app.get('/getcarownercar/:owner_id', (request, response) => {
 	const owner_id = request.params.owner_id;
 
-	console.log(owner_id);
+	// console.log(owner_id);
 	ShowOwnerCars(request, response, owner_id);
 });
 
 async function ShowOwnerDrivers(req, res, owner_id) {
-	const query = ` SELECT u.User_name, u.Name_Fname ||' '|| u.Name_Lname as "Driver Name",d.total_earning,d.Car_no    
+	const query = ` SELECT u.User_name, u.Name_Fname ||' '|| u.Name_Lname as "Driver Name",d.total_earning,d.Car_no, u.Phone_no, to_char(u.dob, 'Month dd, yyyy'), u.age    
 	from Userr u, driver d
 	where u.u_ID in (select dru_id 
 		from hire
 		where cou_id= '${owner_id}') and u.u_id = d.u_id`;
-	console.log(query);
+	// console.log(query);
 	let iserrorfound = false;
 
 	try {
@@ -886,12 +886,9 @@ app.get('/getcarownerdriver/:owner_id', (request, response) => {
 	ShowOwnerDrivers(request, response, owner_id);
 });
 
-
-
-
 async function ShowOwnerDailyEarning(req, res, owner_id) {
 	const query = `select * from car_owner`;
-	console.log(query);
+	// console.log(query);
 	let iserrorfound = false;
 
 	try {
@@ -912,22 +909,19 @@ async function ShowOwnerDailyEarning(req, res, owner_id) {
 
 app.get('/getcarownerdailyearning/:owner_id', (request, response) => {
 	const owner_id = request.params.owner_id;
-	console.log(owner_id);
+	// console.log(owner_id);
 	ShowOwnerDailyEarning(request, response, owner_id);
 });
 
-
-
-
 async function ShowOwnerTrips(req, res, owner_id) {
 	const query = `select * from trip`;
-	console.log(query);
+	// console.log(query);
 	let iserrorfound = false;
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
 		result = await connection.execute(query);
-		console.log(result);
+		// console.log(result);
 	} catch (error) {
 		iserrorfound = true;
 		res.status(401).send({
@@ -943,15 +937,9 @@ async function ShowOwnerTrips(req, res, owner_id) {
 
 app.get('/getcarownertrips/:owner_id', (request, response) => {
 	const owner_id = request.params.owner_id;
-	console.log(`WHYYYYY ${owner_id}`);
+	// console.log(`WHYYYYY ${owner_id}`);
 	ShowOwnerTrips(request, response, owner_id);
 });
-
-
-
-
-
-
 
 //
 //
