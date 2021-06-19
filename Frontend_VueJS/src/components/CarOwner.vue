@@ -2,7 +2,7 @@
 	<div class="carcontainer">
 		<div class="dashboard">
 			<div class="navcontainer">
-				<img src="/assets\uberlogow.png" alt="" srcset="" id="uberlogo" />
+				<img src="/assets\uberlogo.png" alt="" srcset="" id="uberlogo" />
 				<img
 					src="/assets\logout.png"
 					alt=""
@@ -315,17 +315,19 @@
 		height: auto;
 		float: left;
 		position: relative;
-		top: 0%;
+		top: 50%;
+		transform: translateY(-50%);
 	}
 	.navcontainer img#settingsicon {
 		width: 28px;
 		height: auto;
 		float: right;
 		position: relative;
-		top: 0%;
+		top: 50%;
+		transform: translateY(-50%);
 	}
 	.dashboarditems {
-		margin-top: 8rem;
+		margin-top: 10rem;
 		color: #eee;
 		padding-left: 2rem;
 		cursor: pointer;
@@ -382,5 +384,16 @@
 	#userdob,
 	#userearn {
 		padding: 5px;
+	}
+
+	.navcontainer {
+		background: rgb(48, 48, 48);
+		width: calc(250px);
+		height: 120px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		padding-left: 1.5rem;
+		padding-right: 1.5rem;
 	}
 </style>
