@@ -887,22 +887,62 @@ app.get('/getcarownerdriver/:owner_id', (request, response) => {
 });
 
 async function ShowOwnerDailyEarning(req, res, owner_id) {
-	const query = `select * from car_owner`;
-	// console.log(query);
+
+	const query = `drop table earningdaily`;
+	const query1 = `create table earningdaily (tripdate date, amount number)`;
+
+	const query2 =  ` create or replace procedure getdate
+						As
+						Begin  
+							for r in (select dru_id from hire where cou_id='${owner_id}')
+							loop for c in
+								(select trip_date,
+								Fare_amnt*((select percentage
+											from car
+											where car_no in (select car_no
+															from driver
+															where u_id = r.dru_id) )/100) Earning
+									from Trip
+									where dru_id = r.dru_id) loop
+									insert into earningdaily values(c.trip_date, c.Earning);  
+									commit;  
+							end loop;
+						end loop;
+						EXCEPTION
+						WHEN OTHERS THEN
+						raise_application_error(-20001,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+						End;
+						`;
+
+	const query3 = `Begin
+						 getdate; 
+				    End;`;
+
+	const query4 = `select to_char(tripdate,'dd-mm-yyyy'), Sum(amount) from earningdaily group by tripdate`;
+	
+	console.log(query);
+	console.log(query1);
+	console.log(query2);
+	console.log(query3);
+	console.log(query4);
 	let iserrorfound = false;
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
-		result = await connection.execute(query);
+		result = await connection.execute(query);	
+		result1 = await connection.execute(query1);		
+		result2 = await connection.execute(query2);
+		result3 = await connection.execute(query3);
+		result4 = await connection.execute(query4);
 	} catch (error) {
 		iserrorfound = true;
 		res.status(401).send({
-			message: 'Could not fetch data from car owner',
+			message: error.message,
 		});
 	} finally {
 		if (connection) {
 			await connection.close();
-			if (!iserrorfound) res.status(200).send(result.rows);
+			if (!iserrorfound) res.status(200).send(result4.rows);
 		}
 	}
 }

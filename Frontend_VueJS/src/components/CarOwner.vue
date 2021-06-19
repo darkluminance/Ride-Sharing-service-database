@@ -106,15 +106,15 @@
 			<h1>Daily Earning</h1>
 
 			<div style="margin-top: 3rem;">
-				<div class="earning">
+				<div class="dailyearning">
 					<div
 						v-for="earningitem in earning"
 						:key="earningitem.date"
 						class="earningitem"
 					>
 						<!-- <h1>Driver</h1> -->
-						<p>Total Earning: {{ earningitem.date }}</p>
-						<p>Car using: {{ earningitem.earning }}</p>
+						<p>Date of Trips: {{ earningitem.date }}</p>
+						<p>Total Earning: {{ earningitem.earning }}</p><br>
 					</div>
 				</div>
 			</div>
@@ -131,7 +131,7 @@
 						class="tripitem"
 					>
 						<h1>Driver</h1>
-						<p>Trip ID: {{ tripitem.tripid }}</p>
+						<p>Trip ID: {{ tripitem.tripid}}</p>
 						<p>Trip Date: {{ tripitem.date }}</p>
 						<p>Time: {{ tripitem.time }}</p>
 						<p>Driver Name: {{ tripitem.drivername }}</p>
@@ -260,8 +260,12 @@
 		},
 		mounted() {
 			this.GetCarOwnerData();
-			this.GetCarOwnerCar();
-			this.GetCarOwnerDriver();
+			this.GetCarOwnerCar(); 
+			this.GetCarOwnerDriver(); 
+			setTimeout(() => {
+				this.GetCarOwnerDailyEarning();
+			}, 800);
+			
 			this.GetCarOwnerTrips();
 			setTimeout(() => {
 				this.GetCarOwnerDailyEarning();
@@ -296,7 +300,6 @@
 	}
 	.carownerprofile,
 	.carownercars,
-	.dailyearning,
 	.carownerdrivers,
 	.trips {
 		/* height: 100vh; */
