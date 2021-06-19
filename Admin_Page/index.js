@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'MahaDbms',
-	password: 'MahaDbms',
+	user: 'ryoko',
+	password: 'ryoko',
 	connectString: 'localhost/xe',
 };
 
@@ -47,10 +47,6 @@ const userdata = {
 	}),
 };
 
-
-
-
-
 ///USERS INFO
 async function getData(req, res) {
 	const query = `select * from user_view`;
@@ -64,7 +60,6 @@ async function getData(req, res) {
 
 		udata = {
 			headers: [
-				
 				'User ID',
 				'User Name',
 				'Name',
@@ -72,7 +67,7 @@ async function getData(req, res) {
 				'Phone',
 				'Date of Birth',
 				'Age',
-				'      '
+				'      ',
 			],
 			rows: result.rows,
 		};
@@ -104,10 +99,17 @@ async function get_ClData(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-
-			headers: ['Client ID', 'User Name','Client Name','Age', 'Client Location', 'Total Ratings', 'Total Trips', '      '],
-			rows: result.rows
-			
+			headers: [
+				'Client ID',
+				'User Name',
+				'Client Name',
+				'Age',
+				'Client Location',
+				'Total Ratings',
+				'Total Trips',
+				'      ',
+			],
+			rows: result.rows,
 		};
 
 		console.log('Connected');
@@ -233,7 +235,7 @@ async function get_CarOwn(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ['User ID', 'Car Rent', 'NID', 'Car Number','      '],
+			headers: ['User ID', 'Car Rent', 'NID', 'Car Number', '      '],
 			rows: result.rows,
 		};
 
@@ -283,14 +285,13 @@ async function get_Car(req, res) {
 	}
 }
 
-
 //------------Company Bill Daily-----------
 async function get_ComBillD(req, res) {
-	const query = `select *from Carselect to_char(Bill_Date,'dd-mm-yyyy'), SUM(profit_amount)
-	FROM  company_bill
-	Group by to_char(bill_date, 'dd-mm-yyyy');`;
+	const query = `select to_char(Bill_Date,'dd-mm-yyyy'), SUM(profit_amount) from company_bill group by to_char(bill_date, 'dd-mm-yyyy')`;
 	console.log(query);
-	var udata = null;
+	var udata = {};
+	let iserror = false;
+
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
 		connection = await oracledb.getConnection(dbconnection);
@@ -299,31 +300,31 @@ async function get_ComBillD(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: [
-				'Bill_ID',
-				'Bill_Month',
-				'Bill_Date',
-				'Profit Amount'
-			],
+			headers: ['Bill_Date', 'Profit Amount'],
 			rows: result.rows,
 		};
 
 		console.log('Connected');
 	} catch (error) {
 		//If any error occurs while connecting or fetching data
+		iserror = true;
+		console.log(error.message);
+		res.status(401).send({
+			message: error.message,
+		});
 	} finally {
 		if (connection) {
 			await connection.close(); //Closes the connection
 			console.log('Connection ended');
 		}
-		res.status(200).send(udata); //Sends back the data with success status 200
+		if (!iserror) res.status(200).send(udata); //Sends back the data with success status 200
 	}
 }
 //------------Company Bill Monthly-----------
 async function get_ComBillM(req, res) {
 	const query = `select bill_month, SUM(profit_amount)
 	FROM  company_bill
-	Group by bill_month;`;
+	Group by bill_month`;
 	var udata = null;
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -333,17 +334,11 @@ async function get_ComBillM(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: [
-				'Bill_ID',
-				'Bill_Month',
-				'Bill_Date',
-				'Profit Amount'
-				
-			],
+			headers: ['Bill_Month', 'Profit Amount'],
 			rows: result.rows,
 		};
 
-		console.log('Connected');
+		console.log('Connected anddd.....', udata);
 	} catch (error) {
 		//If any error occurs while connecting or fetching data
 	} finally {
@@ -458,13 +453,13 @@ app.get('/Car', (request, response) => {
 	get_Car(request, response);
 });
 ///get req from company bill daily
-app.get('/ComBillDaily', (request, response) => {
+app.get('/combilldaily', (request, response) => {
 	//res.json(userdata);
 	console.log('req obtained');
 	get_ComBillD(request, response);
 });
 ///get req from company bill monthly
-app.get('/ComBillMonthly', (request, response) => {
+app.get('/combillmonthly', (request, response) => {
 	//res.json(userdata);
 	console.log('req obtained');
 	get_ComBillM(request, response);
