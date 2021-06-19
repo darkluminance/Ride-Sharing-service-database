@@ -8,8 +8,8 @@ const { response, request } = require('express');
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'MahaDbms',
+	password: 'MahaDbms',
 	connectString: 'localhost/xe',
 };
 
@@ -282,6 +282,78 @@ async function get_Car(req, res) {
 		res.status(200).send(udata); //Sends back the data with success status 200
 	}
 }
+
+
+//------------Company Bill Daily-----------
+async function get_ComBillD(req, res) {
+	const query = `select *from Carselect to_char(Bill_Date,'dd-mm-yyyy'), SUM(profit_amount)
+	FROM  company_bill
+	Group by to_char(bill_date, 'dd-mm-yyyy');`;
+	console.log(query);
+	var udata = null;
+	try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: [
+				'Bill_ID',
+				'Bill_Month',
+				'Bill_Date',
+				'Profit Amount'
+			],
+			rows: result.rows,
+		};
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
+	}
+}
+//------------Company Bill Monthly-----------
+async function get_ComBillM(req, res) {
+	const query = `select bill_month, SUM(profit_amount)
+	FROM  company_bill
+	Group by bill_month;`;
+	var udata = null;
+	try {
+		//Try to perform a connection to the oracle database using the credentials above
+		connection = await oracledb.getConnection(dbconnection);
+
+		//Executes the query and stores the obtained data
+		result = await connection.execute(query);
+
+		udata = {
+			headers: [
+				'Bill_ID',
+				'Bill_Month',
+				'Bill_Date',
+				'Profit Amount'
+				
+			],
+			rows: result.rows,
+		};
+
+		console.log('Connected');
+	} catch (error) {
+		//If any error occurs while connecting or fetching data
+	} finally {
+		if (connection) {
+			await connection.close(); //Closes the connection
+			console.log('Connection ended');
+		}
+		res.status(200).send(udata); //Sends back the data with success status 200
+	}
+}
 //Get user data	-------> req is the request, res is the response we'll send back to the browser and uid is the userid whose
 //data we'll search
 async function getUserData(req, res, uid) {
@@ -384,6 +456,18 @@ app.get('/Car', (request, response) => {
 	//res.json(userdata);
 	console.log('req obtained');
 	get_Car(request, response);
+});
+///get req from company bill daily
+app.get('/ComBillDaily', (request, response) => {
+	//res.json(userdata);
+	console.log('req obtained');
+	get_ComBillD(request, response);
+});
+///get req from company bill monthly
+app.get('/ComBillMonthly', (request, response) => {
+	//res.json(userdata);
+	console.log('req obtained');
+	get_ComBillM(request, response);
 });
 
 app.listen(port, () => {

@@ -197,7 +197,70 @@
               table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
 
             }
-      }    //END OF TABLES
+      }   
+      ///--------------Company Bill Daily------------ 
+    async function update_bill(root){
+        const table=root.querySelector(".table-ref-data");
+        const response=await fetch("http://localhost:5001/ComBillDaily");
+        const userdata=await response.json();
+        console.log(userdata.headers);
+        console.log('mappy');
+
+            //clear data
+            table.querySelector("thead tr").innerHTML = "";
+            table.querySelector("tbody").innerHTML = "";
+
+            //populate headers
+
+
+            for (var index in userdata.headers) {
+                table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
+
+            }
+
+
+
+            //populate data
+            for(const data of userdata.rows){
+              let tablerowdata = "";
+              for (const td of data){
+                tablerowdata += `<td>${ td }</td>`;
+              }
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
+
+            }
+    }   
+      //--------------Company Bill monthy------------ 
+      async function update_bill_monthly(root){
+        const table=root.querySelector(".table-ref-data");
+        const response=await fetch("http://localhost:5001/ComBillMonthly");
+        const userdata=await response.json();
+        console.log(userdata.headers);
+
+            //clear data
+            table.querySelector("thead tr").innerHTML = "";
+            table.querySelector("tbody").innerHTML = "";
+
+            //populate headers
+
+
+            for (var index in userdata.headers) {
+                table.querySelector("thead tr").insertAdjacentHTML("afterbegin" , `<th>${ userdata.headers[userdata.headers.length - index - 1] }</th>`);
+
+            }
+
+
+
+            //populate data
+            for(const data of userdata.rows){
+              let tablerowdata = "";
+              for (const td of data){
+                tablerowdata += `<td>${ td }</td>`;
+              }
+              table.querySelector("tbody").insertAdjacentHTML("afterbegin",`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `);
+
+            }
+      }   //END OF TABLES
 
 
     for(const root of document.querySelectorAll(".table-ref[data-url]")){
@@ -223,6 +286,8 @@
         var trip=document.getElementById('trip');
         var carown=document.getElementById('CarOwn');
         var car=document.getElementById('car');
+        var bill_daily=document.getElementById('cbd');
+        var bill_monthly=document.getElementById('cbm');
         
         if(user){
         user.addEventListener("click",function(){
@@ -260,18 +325,19 @@
                 update_Car(root);
            });
         }
-        // var btn=getElementById('deleteBtn');
-        // btn.addEventListener("mouseover",function(){
-        //   style.display="inline";
-        // });
-        // btn.addEventListener("mouseout", function(){
-        //   style.display="none";
-        // });
-        function show(){
-          document.getElementById('deleteBtn').style.display="inline";
+        if(bill_daily){
+          bill_daily.addEventListener("click",function(){
+              alert("hi");
+              update_bill(root);
+         });
         }
-        function hide(){
-          document.getElementById('deleteBtn').style.display="none";
+        if(bill_monthly){
+          bill_monthly.addEventListener("click",function(){
+               alert("hi");
+               update_bill_monthly(root);
+         });
         }
+       
+       
     }
 }
