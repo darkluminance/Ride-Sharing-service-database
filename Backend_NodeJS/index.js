@@ -829,8 +829,9 @@ app.get('/getcarownerdata/:owner_id', (request, response) => {
 });
 
 async function ShowOwnerCars(req, res, owner_id) {
-	const query = `select * from car
-	where COUID ='${owner_id}'`;
+	const query = ` select * from car
+					where COUID ='${owner_id}'`;
+					console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -884,6 +885,73 @@ app.get('/getcarownerdriver/:owner_id', (request, response) => {
 	console.log(owner_id);
 	ShowOwnerDrivers(request, response, owner_id);
 });
+
+
+
+
+async function ShowOwnerDailyEarning(req, res, owner_id) {
+	const query = `select * from car_owner`;
+	console.log(query);
+	let iserrorfound = false;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+	} catch (error) {
+		iserrorfound = true;
+		res.status(401).send({
+			message: 'Could not fetch data from car owner',
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			if (!iserrorfound) res.status(200).send(result.rows);
+		}
+	}
+}
+
+app.get('/getcarownerdailyearning/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+	console.log(owner_id);
+	ShowOwnerDailyEarning(request, response, owner_id);
+});
+
+
+
+
+async function ShowOwnerTrips(req, res, owner_id) {
+	const query = `select * from trip`;
+	console.log(query);
+	let iserrorfound = false;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+		console.log(result);
+	} catch (error) {
+		iserrorfound = true;
+		res.status(401).send({
+			message: 'Could not fetch data from Trips',
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			if (!iserrorfound) res.status(200).send(result.rows);
+		}
+	}
+}
+
+app.get('/getcarownertrips/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+	console.log(`WHYYYYY ${owner_id}`);
+	ShowOwnerTrips(request, response, owner_id);
+});
+
+
+
+
+
+
 
 //
 //
