@@ -81,7 +81,7 @@
 		<div v-if="activemenu === 3" class="carownerdrivers">
 			<h1>Car Owner Drivers</h1>
 
-			<div style="margin-top: 3rem;">
+			<div class="MommaDriver" style="margin-top: 3rem;">
 				<div class="drivers">
 					<div
 						v-for="driveritem in codrivers"
@@ -287,7 +287,7 @@
 
 <style scoped>
 	body {
-		background: #eee !important;
+		background: #eee important;
 	}
 	.carcontainer {
 		background: #eee;
@@ -311,7 +311,6 @@
 	}
 	.carownerprofile,
 	.carownercars,
-	.carownerdrivers,
 	.dailyearning,
 	.trips {
 		/* height: 100vh; */
@@ -322,6 +321,22 @@
 		grid-column-end: 6;
 		width: calc(100vw - 250px);
 	}
+	.trips
+	{
+		background-color: #eee;
+		margin-left: 50px;
+		width: calc(100vw - 317px);
+	}
+	.carownerdrivers
+	{
+		margin: 0;
+		padding-top: 5%;
+		/* position: relative; */
+		grid-column-start: 2;
+		grid-column-end: 6;
+		width: calc(100vw - 300px);
+	}
+
 	.navcontainer img#uberlogo {
 		width: 108px;
 		height: auto;
@@ -350,19 +365,68 @@
 	.dashboarditems .selected {
 		color: rgb(78, 78, 78);
 	}
-
-	.drivers {
+	.drivers{
+		background-color: #eee;
 		display: flex;
-		justify-content: center;
+		flex-wrap: wrap;
+		width: 98.5%;
+		/* // width: 1200px; */
+		/* justify-content: center; */
+		margin-left: 45px;
 	}
-
-	.driveritem {
-		width: 350px;
+	.driveritem h1
+	{
+		position: relative;
+		z-index: 5;
+	}
+	.driveritem p
+	{
+		position: relative;
+		z-index: 5;
+		display: block;
+	}
+	.drivers .driveritem {
+		background-color:#eee;
+		margin-left: 33px;
+		position: relative;
+		margin-bottom: 50px;
+		min-width: 300px;
 		height: 420px;
 		padding: 2rem;
-		margin: 2rem;
-		background: #e1e1e1;
 		color: rgb(88, 88, 88);
+		box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+		border-radius: 10px;
+	}
+
+	.drivers .driveritem:before {
+		z-index: 0;
+		
+		content:'';
+		position: absolute;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+		background:#6c5ce7;
+		border-radius: 10px;
+		transform: scaleY(0);
+		transform-origin: top;
+		transition: transform 0.5s;
+		opacity:1;
+	}
+
+	.drivers .driveritem:hover:before
+	{
+		border-radius: 10px;
+		transform: scaleY(1);
+		transform-origin: bottom;
+		transition: transform 0.5s;
+	}
+	.drivers .driveritem:hover
+	{
+		color: #eee;
+		text-shadow: 1px 1px rgba(0, 0, 0, 0.3);
+		transition: 1.2s;
 	}
 	.driveritem p {
 		text-align: left;
@@ -430,7 +494,7 @@
 		border-collapse: collapse;
 		border-radius: 8px;
 		border-style: hidden; /* hide standard table (collapsed) border */
-		box-shadow: 0 0 0 0.5px rgb(69, 69, 69); /* this draws the table border  */
+		box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
 	}
 </style>
