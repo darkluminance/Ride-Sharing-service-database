@@ -31,8 +31,23 @@
 				>
 					<h2>Drivers</h2>
 				</div>
+
+				<div
+					@click="changeactivemenu(4)"
+					:class="{ selected: activemenu === 4 }"
+				>
+					<h2>Daily Earning</h2>
+				</div>
+
+				<div
+					@click="changeactivemenu(5)"
+					:class="{ selected: activemenu === 5 }"
+				>
+					<h2>Trips</h2>
+				</div>
 			</div>
 		</div>
+
 		<div v-if="activemenu === 1" class="carownerprofile">
 			<h1>Car Owner Profile</h1>
 
@@ -43,6 +58,7 @@
 				<h1>Total Earning: Tk. {{ coearn }}</h1>
 			</div>
 		</div>
+
 		<div v-if="activemenu === 2" class="carownercars">
 			<h1>Car Owner Cars</h1>
 
@@ -61,6 +77,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div v-if="activemenu === 3" class="carownerdrivers">
 			<h1>Car Owner Drivers</h1>
 
@@ -80,6 +97,49 @@
 				</div>
 			</div>
 		</div>
+
+		<div v-if="activemenu === 4" class="dailyearning">
+			<h1>Daily Earning</h1>
+
+			<div style="margin-top: 3rem;">
+				<div class="earning">
+					<div
+						v-for="earningitem in earning"
+						:key="earningitem.date"
+						class="earningitem"
+					>
+						<h1>Driver</h1>
+						<p>Total Earning: {{ earningitem.date}}</p>
+						<p>Car using: {{ earningitem.earning }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+			<div v-if="activemenu === 5" class="trips">
+			<h1>Trips</h1>
+
+			<div style="margin-top: 3rem;">
+				<div class="another_trip">
+					<div
+						v-for="tripitem in triptable"
+						:key="tripitem.tripid"
+						class="tripitem"
+					>
+						<h1>Driver</h1>
+						<p>Trip ID: {{ tripitem.tripid}}</p>
+						<p>Trip Date: {{ tripitem.date }}</p>
+						<p>Time: {{ tripitem.time }}</p>
+						<p>Driver Name: {{ tripitem.drivername }}</p>
+						<p>Client Name: {{ tripitem.clientname }}</p>
+						<p>Pick Up Location: {{ tripitem.pickuplocation }}</p>
+						<p>Drop Off Location: {{ tripitem.destlocation }}</p>
+						<p>Trip Fare: {{ tripitem.fare }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 </template>
 
@@ -96,6 +156,8 @@
 				cocars: [],
 				codrivers: [],
 				activemenu: 1,
+				earning: [],
+				triptable: []
 			};
 		},
 		props: {
@@ -146,16 +208,42 @@
 						total_earning: element[2],
 						car: element[3],
 					});
-				});
-				/* this.codrivers = [
-					{
-						username: theresponse[0][0],
-						name: theresponse[0][1],
-						total_earning: theresponse[0][2],
-						car: theresponse[0][3],
-					},
-				]; */
+				}); 
 			},
+
+			async GetCarOwnerDailyEarning() {
+				let fetched = await fetch(
+					`http://localhost:5000/getcarownerdailyearning/${this.owner_id}`
+				);
+				let theresponse = await fetched.json();
+				console.log(theresponse);
+				theresponse.forEach((element) => {
+					this.earning.push({
+						date: element[0],
+						earning: element[1]
+					});
+				}); 
+			},
+			async GetCarOwnerTrips() {
+				let fetched = await fetch(
+					`http://localhost:5000/getcarownertrips/${this.owner_id}`
+				);
+				let theresponse = await fetched.json();
+				console.log(theresponse);
+				theresponse.forEach((element) => {
+					this.triptable.push({
+						tripid: element[0],
+						date: element[1],
+						time: element[2],
+						drivername: element[3],
+						clientname: element[4],
+						pickuplocation: element[5],
+						destlocation:element[6],
+						fare: element[7]
+					});
+				}); 
+			},
+
 
 			logoutUser() {
 				localStorage.removeItem('token');
@@ -166,7 +254,11 @@
 			},
 		},
 		mounted() {
-			this.GetCarOwnerData(), this.GetCarOwnerCar(), this.GetCarOwnerDriver();
+			this.GetCarOwnerData();
+			this.GetCarOwnerCar(); 
+			this.GetCarOwnerDriver(); 
+			this.GetCarOwnerDailyEarning();
+			this.GetCarOwnerTrips();
 		},
 	};
 </script>
@@ -195,7 +287,10 @@
 	}
 	.carownerprofile,
 	.carownercars,
-	.carownerdrivers {
+	.dailyearning,
+	.carownerdrivers,
+	.dailyearning,
+	.trips {
 		/* height: 100vh; */
 		margin: 0;
 		padding: 5%;
