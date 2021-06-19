@@ -105,18 +105,33 @@
 		<div v-if="activemenu === 4" class="dailyearning">
 			<h1>Daily Earning</h1>
 
-			<div style="margin-top: 3rem;">
-				<div class="dailyearning">
-					<div
+			<div
+				style="margin-top: 5rem; position: relative; 
+				left:42%; transform: translateX(-60%); 
+				max-width: 420px; "
+			>
+				<table class="dailyearning_inside">
+					<th>
+						<h3>
+							Date
+						</h3>
+					</th>
+					<th>
+						<h3>
+							Total Earning
+						</h3>
+					</th>
+					<tr
 						v-for="earningitem in earning"
 						:key="earningitem.date"
 						class="earningitem"
 					>
 						<!-- <h1>Driver</h1> -->
-						<p>Date of Trips: {{ earningitem.date }}</p>
-						<p>Total Earning: {{ earningitem.earning }}</p><br>
-					</div>
-				</div>
+						<td>{{ earningitem.date }}</td>
+						<td>Tk. {{ earningitem.earning }}</td>
+						<br />
+					</tr>
+				</table>
 			</div>
 		</div>
 
@@ -131,7 +146,7 @@
 						class="tripitem"
 					>
 						<h1>Driver</h1>
-						<p>Trip ID: {{ tripitem.tripid}}</p>
+						<p>Trip ID: {{ tripitem.tripid }}</p>
 						<p>Trip Date: {{ tripitem.date }}</p>
 						<p>Time: {{ tripitem.time }}</p>
 						<p>Driver Name: {{ tripitem.drivername }}</p>
@@ -179,7 +194,7 @@
 					(this.codob = theresponse[0][3]),
 					(this.coage = theresponse[0][4]),
 					(this.cophn = theresponse[0][5]),
-					(this.coearn = theresponse[0][6]);
+					(this.coearn = theresponse[0][6].toFixed(2));
 			},
 
 			async GetCarOwnerCar() {
@@ -226,7 +241,7 @@
 				theresponse.forEach((element) => {
 					this.earning.push({
 						date: element[0],
-						earning: element[1],
+						earning: element[1].toFixed(2),
 					});
 				});
 			},
@@ -260,12 +275,8 @@
 		},
 		mounted() {
 			this.GetCarOwnerData();
-			this.GetCarOwnerCar(); 
-			this.GetCarOwnerDriver(); 
-			// setTimeout(() => {
-			// 	this.GetCarOwnerDailyEarning();
-			// }, 800);
-			
+			this.GetCarOwnerCar();
+			this.GetCarOwnerDriver();
 			this.GetCarOwnerTrips();
 			setTimeout(() => {
 				this.GetCarOwnerDailyEarning();
@@ -274,7 +285,7 @@
 	};
 </script>
 
-<style scope>
+<style scoped>
 	body {
 		background: #eee !important;
 	}
@@ -301,6 +312,7 @@
 	.carownerprofile,
 	.carownercars,
 	.carownerdrivers,
+	.dailyearning,
 	.trips {
 		/* height: 100vh; */
 		margin: 0;
@@ -388,12 +400,37 @@
 
 	.navcontainer {
 		background: rgb(48, 48, 48);
-		width: calc(250px);
+		width: calc(252px);
 		height: 120px;
 		position: absolute;
 		top: 0;
 		left: 0;
 		padding-left: 1.5rem;
 		padding-right: 1.5rem;
+	}
+
+	td {
+		padding: 2rem;
+		min-width: 280px;
+		font-size: 18px;
+	}
+
+	tr {
+		background: #e8e5ff;
+	}
+	tr:nth-child(2n) {
+		background: #cdc9ff;
+	}
+	th {
+		padding: 1rem;
+		background: rgb(69, 69, 69);
+		color: #eee;
+	}
+	table {
+		border-collapse: collapse;
+		border-radius: 8px;
+		border-style: hidden; /* hide standard table (collapsed) border */
+		box-shadow: 0 0 0 0.5px rgb(69, 69, 69); /* this draws the table border  */
+		overflow: hidden;
 	}
 </style>
