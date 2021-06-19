@@ -339,6 +339,7 @@ async function UserDriver(req, res, data, info) {
 
 					EXCEPTION
 					WHEN OTHERS THEN
+					dbms_output.put_line('Error code ' || SQLCODE || ': ' || SQLERRM);
 					ROLLBACK TO start_point;
 					END;`;
 
@@ -827,11 +828,7 @@ app.get('/getcarownerdata/:owner_id', (request, response) => {
 	ShowOwnerProfile(request, response, owner_id);
 });
 
-
-
-
 async function ShowOwnerCars(req, res, owner_id) {
-
 	const query = `select * from car
 	where COUID ='${owner_id}'`;
 
@@ -857,27 +854,27 @@ app.get('/getcarownercar/:owner_id', (request, response) => {
 	ShowOwnerCars(request, response, owner_id);
 });
 
-
 async function ShowOwnerDrivers(req, res, owner_id) {
-
 	const query = ` SELECT u.User_name, u.Name_Fname ||' '|| u.Name_Lname as "Driver Name",d.total_earning,d.Car_no    
-					from Userr u, driver d
-					where u.u_ID = (select dru_id 
-					from hire
-					where cou_id= '${owner_id}') and u.u_id = d.u_id`;
- console.log(query);
+	from Userr u, driver d
+	where u.u_ID in (select dru_id 
+		from hire
+		where cou_id= '${owner_id}') and u.u_id = d.u_id`;
+	console.log(query);
+	let iserrorfound = false;
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
 		result = await connection.execute(query);
 	} catch (error) {
+		iserrorfound = true;
 		res.status(401).send({
 			message: 'Could not fetch data from car owner',
 		});
 	} finally {
 		if (connection) {
 			await connection.close();
-			res.status(200).send(result.rows);
+			if (!iserrorfound) res.status(200).send(result.rows);
 		}
 	}
 }
@@ -887,7 +884,6 @@ app.get('/getcarownerdriver/:owner_id', (request, response) => {
 	console.log(owner_id);
 	ShowOwnerDrivers(request, response, owner_id);
 });
-
 
 //
 //
@@ -1015,9 +1011,11 @@ app.get('/checkusername/:username', (req, res) => {
 	checkforusername(req, res, username);
 });
 
+//------------------------CHECK FOR CAR OWNER -----------------------------
 async function checkforCOUID(req, res, couid) {
 	const query = `select * from userr
 				   where u_id= '${couid}'`;
+	console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -1053,11 +1051,12 @@ app.get('/checkcarownerid/:couid', (req, res) => {
 	checkforCOUID(req, res, couid);
 });
 
-
-async function checkforCarNo(req, res, carno) {
+//------------------------CHECK FOR CAR NO -----------------------------
+async function checkforCarNo(req, res, carno, ownerno) {
 	const query = `select * from car
-				   where car_no = '${carno}'`;
+				   where car_no = '${carno}' and couid = '${ownerno}'`;
 
+	console.log(query);
 	try {
 		connection = await oracledb.getConnection(dbconnection);
 		result = await connection.execute(query);
@@ -1085,12 +1084,12 @@ async function checkforCarNo(req, res, carno) {
 		}
 	}
 }
-app.get('/checkcarno/:carno', (req, res) => {
+app.get('/checkcarno/:carno/:ownerid', (req, res) => {
 	let carno = req.params.carno;
-	console.log(`CHECKCHEKCHEK ${carno}`);
-	checkforCarNo(req, res, carno);
+	let ownerno = req.params.ownerid;
+	console.log(`CHECKCHEKCHEK ${carno} ${ownerno}`);
+	checkforCarNo(req, res, carno, ownerno);
 });
-
 
 //Listen to the specific port to connect to the server
 //This is the main part of the backend server

@@ -71,10 +71,11 @@
 						:key="driveritem.username"
 						class="caritem"
 					>
-						<h2>Driver User Name: {{ driveritem.username }}</h2>
-						<h2>Driver Name: {{ driveritem.name }}</h2>
-						<h2>Total Earning: {{ driveritem.total_earning }}</h2>
-						<h2>Car using: {{ driveritem.car }}</h2>
+						<h1>Driver</h1>
+						<p>Driver User Name: {{ driveritem.username }}</p>
+						<p>Driver Name: {{ driveritem.name }}</p>
+						<p>Total Earning: {{ driveritem.total_earning }}</p>
+						<p>Car using: {{ driveritem.car }}</p>
 					</div>
 				</div>
 			</div>
@@ -98,55 +99,63 @@
 			};
 		},
 		props: {
-			owner_id: ''
-
+			owner_id: '',
 		},
 		methods: {
 			async GetCarOwnerData() {
-
-				let fetched = await fetch(`http://localhost:5000/getcarownerdata/${this.owner_id}`);
+				let fetched = await fetch(
+					`http://localhost:5000/getcarownerdata/${this.owner_id}`
+				);
 				let theresponse = await fetched.json();
 				console.log(theresponse);
 
-				this.couname = theresponse[0][1],
-				this.coname = theresponse[0][2],
-				this.codob = theresponse[0][3],
-				this.coage = theresponse[0][4],
-				this.cophn = theresponse[0][5],
-				this.coearn = theresponse[0][6]
-				
+				(this.couname = theresponse[0][1]),
+					(this.coname = theresponse[0][2]),
+					(this.codob = theresponse[0][3]),
+					(this.coage = theresponse[0][4]),
+					(this.cophn = theresponse[0][5]),
+					(this.coearn = theresponse[0][6]);
 			},
 
 			async GetCarOwnerCar() {
-
-			let fetched = await fetch(`http://localhost:5000/getcarownercar/${this.owner_id}`);
-			let theresponse = await fetched.json();
-			console.log(theresponse);
+				let fetched = await fetch(
+					`http://localhost:5000/getcarownercar/${this.owner_id}`
+				);
+				let theresponse = await fetched.json();
+				console.log(theresponse);
 				this.cocars = [
-				{
-					carno : theresponse[0][0] ,
-					carcolor :  theresponse[0][1],
-					carmodel : theresponse[0][2],
-					cartype :  theresponse[0][3]
-				},
-			];
+					{
+						carno: theresponse[0][0],
+						carcolor: theresponse[0][1],
+						carmodel: theresponse[0][2],
+						cartype: theresponse[0][3],
+					},
+				];
 			},
 
 			async GetCarOwnerDriver() {
-
-			let fetched = await fetch(`http://localhost:5000/getcarownerdriver/${this.owner_id}`);
-			let theresponse = await fetched.json();
-			console.log(theresponse);
-				this.codrivers = [
-				{
-					username: theresponse[0][0],
-					name:  theresponse[0][1],
-					total_earning: theresponse[0][2],
-					car: theresponse[0][3]
-				},
-			];
+				let fetched = await fetch(
+					`http://localhost:5000/getcarownerdriver/${this.owner_id}`
+				);
+				let theresponse = await fetched.json();
+				console.log(theresponse);
+				theresponse.forEach((element) => {
+					this.codrivers.push({
+						username: element[0],
+						name: element[1],
+						total_earning: element[2],
+						car: element[3],
+					});
+				});
+				/* this.codrivers = [
+					{
+						username: theresponse[0][0],
+						name: theresponse[0][1],
+						total_earning: theresponse[0][2],
+						car: theresponse[0][3],
+					},
+				]; */
 			},
-			
 
 			logoutUser() {
 				localStorage.removeItem('token');
@@ -154,18 +163,18 @@
 			},
 			changeactivemenu(mi) {
 				this.activemenu = mi;
-			}
+			},
 		},
 		mounted() {
-
-			this.GetCarOwnerData(),
-			this.GetCarOwnerCar(),
-			this.GetCarOwnerDriver()
+			this.GetCarOwnerData(), this.GetCarOwnerCar(), this.GetCarOwnerDriver();
 		},
 	};
 </script>
 
-<style>
+<style scope>
+	body {
+		/* background: #eee !important; */
+	}
 	.carcontainer {
 		background: #eee;
 		/* width: 100vw; */

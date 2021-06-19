@@ -256,7 +256,7 @@
 				password: '',
 				usernameexists: false,
 				COUIDexists: false,
-				CARExists: false
+				CARExists: false,
 			};
 		},
 
@@ -279,7 +279,7 @@
 			},
 			ccar(newval, oldval) {
 				if (newval !== '') this.checkCarNo(newval);
-			}
+			},
 		},
 		methods: {
 			...mapMutations['setAuthentication'],
@@ -309,7 +309,7 @@
 
 			async checkCarNo(id) {
 				let responsed = await fetch(
-					`http://localhost:5000/checkcarno/${id}`
+					`http://localhost:5000/checkcarno/${id}/${this.dcoid}`
 				);
 
 				let id_exists = await responsed.json();
@@ -390,21 +390,15 @@
 					alert('Please enter all of the information!');
 				} else if (this.dpass != this.dconpass) {
 					alert('Passwords do not match');
-				}  else {
-					if(this.COUIDexists===false)
-					{
+				} else {
+					if (this.COUIDexists === false) {
 						// console.log(`HAGA ${this.COUIDexists}`);
 						alert('The Car Owner ID does not exist!');
-						
-					}
-					else if(this.Carexists===false)
-					{
+					} else if (this.Carexists === false) {
 						alert('The Car Number does not exist!');
-					}
-					else if (this.usernameexists) {
+					} else if (this.usernameexists) {
 						// console.log(`ANOTHER HAGA ${this.usernameexists}`);
 						alert('The username already exists!');
-						
 					} else {
 						const something = await fetch(
 							'http://localhost:5000/insertuserdriver',
@@ -451,12 +445,10 @@
 				if (isEmpty) {
 					alert('Please enter all of the information!');
 				} else {
-					if(this.Carexists===false)
-					{
+					if (this.Carexists === false) {
 						console.log(`${this.Carexists}`);
 						alert('The Car Number does not exist!');
-					}
-					else if (this.usernameexists) {
+					} else if (this.usernameexists) {
 						alert('The username already exists!');
 					} else {
 						const something = await fetch(
