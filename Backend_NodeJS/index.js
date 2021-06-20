@@ -12,8 +12,8 @@ const { Server } = require('socket.io'); //Import socket.io for websockets i.e C
 
 //The credentials for oracle database
 const dbconnection = {
-	user: 'talkinghead',
-	password: 'talk',
+	user: 'ryoko',
+	password: 'ryoko',
 	connectString: 'localhost/xe',
 };
 
@@ -887,11 +887,10 @@ app.get('/getcarownerdriver/:owner_id', (request, response) => {
 });
 
 async function ShowOwnerDailyEarning(req, res, owner_id) {
-
 	const query = `drop table earningdaily`;
 	const query1 = `create table earningdaily (tripdate date, amount number)`;
 
-	const query2 =  ` create or replace procedure getdate
+	const query2 = ` create or replace procedure getdate
 						As
 						Begin  
 							for r in (select dru_id from hire where cou_id='${owner_id}')
@@ -919,7 +918,7 @@ async function ShowOwnerDailyEarning(req, res, owner_id) {
 				    End;`;
 
 	const query4 = `select to_char(tripdate,'dd-mm-yyyy'), Sum(amount) from earningdaily group by tripdate`;
-	
+
 	console.log(query);
 	console.log(query1);
 	console.log(query2);
@@ -929,8 +928,8 @@ async function ShowOwnerDailyEarning(req, res, owner_id) {
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
-		result = await connection.execute(query);	
-		result1 = await connection.execute(query1);		
+		result = await connection.execute(query);
+		result1 = await connection.execute(query1);
 		result2 = await connection.execute(query2);
 		result3 = await connection.execute(query3);
 		result4 = await connection.execute(query4);

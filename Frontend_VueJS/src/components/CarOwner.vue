@@ -49,7 +49,7 @@
 		</div>
 
 		<div v-if="activemenu === 1" class="carownerprofile">
-			<h1>Car Owner Profile</h1>
+			<h1>Welcome, Car Owner</h1>
 
 			<div style="margin-top: 3rem;" class="userprofile">
 				<h1>{{ coname }}</h1>
@@ -88,7 +88,10 @@
 						:key="driveritem.username"
 						class="driveritem"
 					>
-						<h1>Driver</h1>
+						<!-- <h1>Driver</h1> -->
+						<div class="profilecirc">
+							<img src="/assets\joey.png" alt="" srcset="" id="profileimg" />
+						</div>
 						<br /><br />
 						<p><strong>Driver Username: </strong>{{ driveritem.username }}</p>
 						<p><strong>Driver Name: </strong>{{ driveritem.name }}</p>
@@ -295,19 +298,22 @@
 		height: 100vh;
 		margin: 0;
 		color: rgb(68, 68, 68);
-		display: grid;
+		/* display: grid; */
+		/* display: flex; */
 	}
 	.dashboard {
 		/* width: 25%; */
-		/* height: 100vh; */
+		height: 100vh;
+		position: fixed;
 		background: #6c5ce7;
-		grid-column-start: 1;
-		grid-column-end: 1;
+		/* grid-column-start: 1;
+		grid-column-end: 1; */
 		text-align: left;
-		min-width: 250px;
-		max-width: 250px;
+		/* min-width: 250px;
+		max-width: 250px; */
+		width: 300px;
 
-		padding: 10%;
+		/* padding: 10%; */
 	}
 	.carownerprofile,
 	.carownercars,
@@ -317,24 +323,25 @@
 		margin: 0;
 		padding-top: 5%;
 		/* position: relative; */
-		grid-column-start: 2;
-		grid-column-end: 6;
-		width: calc(100vw - 250px);
+		/* grid-column-start: 2;
+		grid-column-end: 6; */
+		width: calc(100vw - 300px);
+		float: right;
 	}
-	.trips
-	{
+	.trips {
 		background-color: #eee;
 		margin-left: 50px;
-		width: calc(100vw - 317px);
+		width: calc(100vw - 300px);
 	}
-	.carownerdrivers
-	{
+	.carownerdrivers {
 		margin: 0;
 		padding-top: 5%;
 		/* position: relative; */
-		grid-column-start: 2;
-		grid-column-end: 6;
-		width: calc(100vw - 300px);
+		/* grid-column-start: 2;
+		grid-column-end: 6; */
+		width: calc(100vw - 315px);
+		float: right;
+		background: #eee;
 	}
 
 	.navcontainer img#uberlogo {
@@ -365,28 +372,30 @@
 	.dashboarditems .selected {
 		color: rgb(78, 78, 78);
 	}
-	.drivers{
-		background-color: #eee;
+	.drivers {
+		/* background-color: #eee; */
 		display: flex;
 		flex-wrap: wrap;
-		width: 98.5%;
+		/* width: 98.5%; */
 		/* // width: 1200px; */
-		/* justify-content: center; */
-		margin-left: 45px;
+		max-width: calc(100vw - 318px);
+		justify-content: center;
+		/* margin-left: auto; */
+		position: relative;
+		left: 50%;
+		transform: translateX(-51%);
 	}
-	.driveritem h1
-	{
+	.driveritem h1 {
 		position: relative;
 		z-index: 5;
 	}
-	.driveritem p
-	{
+	.driveritem p {
 		position: relative;
 		z-index: 5;
 		display: block;
 	}
 	.drivers .driveritem {
-		background-color:#eee;
+		background-color: #eee;
 		margin-left: 33px;
 		position: relative;
 		margin-bottom: 50px;
@@ -400,30 +409,28 @@
 
 	.drivers .driveritem:before {
 		z-index: 0;
-		
-		content:'';
+
+		content: '';
 		position: absolute;
-		top:0;
-		left:0;
-		width:100%;
-		height:100%;
-		background:#6c5ce7;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: #6c5ce7;
 		border-radius: 10px;
 		transform: scaleY(0);
 		transform-origin: top;
 		transition: transform 0.5s;
-		opacity:1;
+		opacity: 1;
 	}
 
-	.drivers .driveritem:hover:before
-	{
+	.drivers .driveritem:hover:before {
 		border-radius: 10px;
 		transform: scaleY(1);
 		transform-origin: bottom;
 		transition: transform 0.5s;
 	}
-	.drivers .driveritem:hover
-	{
+	.drivers .driveritem:hover {
 		color: #eee;
 		text-shadow: 1px 1px rgba(0, 0, 0, 0.3);
 		transition: 1.2s;
@@ -446,6 +453,10 @@
 	}
 	.userprofile h1 {
 		font-size: 2.5rem;
+	}
+	.userprofile:hover {
+		background: #c7c7c7;
+		transition: 0.5s;
 	}
 	#userphn {
 		font-size: 1.3rem;
@@ -496,5 +507,24 @@
 		border-style: hidden; /* hide standard table (collapsed) border */
 		box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
+	}
+	.profilecirc {
+		border-radius: 50%;
+		position: relative;
+		top: 10%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 120px;
+		height: 120px;
+		margin: 0;
+		margin-top: 30px;
+		padding: 0;
+		margin-bottom: -8%;
+	}
+	#profileimg {
+		width: inherit;
+		height: inherit;
+		margin: 0;
+		padding: 0;
 	}
 </style>
