@@ -18,7 +18,7 @@
 				<p>{{ udata.phone }}</p>
 			</div>
 
-			<div class="tripinfo">
+			<div class="tripinfo" @click="showalltrips">
 				<h3>Total trips: {{ clivdata.total_trips }}</h3>
 			</div>
 		</div>
@@ -29,14 +29,20 @@
 			</button>
 		</div>
 	</div>
+	<div class="tripuserr" v-if="showtrips">
+		<UserTrips :uid="udata.uid" @closetrips="showtrips = false"></UserTrips>
+	</div>
 </template>
 
 <script>
+	import UserTrips from './UserTrips.vue';
 	export default {
 		props: ['udata', 'clivdata'],
+		components: { UserTrips },
 		data() {
 			return {
 				myrating: null,
+				showtrips: false,
 			};
 		},
 		computed: {
@@ -50,6 +56,10 @@
 			logoutUser() {
 				localStorage.removeItem('token');
 				location.reload();
+			},
+			showalltrips() {
+				console.log('Clicked ', this.udata.uid);
+				this.showtrips = true;
 			},
 		},
 	};
@@ -130,6 +140,13 @@
 
 	button:hover {
 		opacity: 0.38;
+	}
+
+	.tripinfo:hover {
+		padding-top: 10px;
+		padding-bottom: 10px;
+		background: #c0c0c0;
+		cursor: pointer;
 	}
 
 	.logoutbtn button {

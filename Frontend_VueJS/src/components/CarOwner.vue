@@ -52,10 +52,12 @@
 			<h1>Welcome, Car Owner</h1>
 
 			<div style="margin-top: 3rem;" class="userprofile">
-				<h1>{{ coname }}</h1>
-				<p id="userphn">Phone No: {{ cophn }}</p>
-				<p id="userdob">Date of Birth: {{ codob }}</p>
-				<p id="userearn">Total Earning: Tk. {{ coearn }}</p>
+				<div>
+					<h1>{{ coname }}</h1>
+					<p id="userphn">Phone No: {{ cophn }}</p>
+					<p id="userdob">Date of Birth: {{ codob }}</p>
+					<p id="userearn">Total Earning: Tk. {{ coearn }}</p>
+				</div>
 			</div>
 		</div>
 
@@ -65,10 +67,7 @@
 			<div style="margin-top: 3rem;">
 				<div class="cars">
 					<div v-for="caritem in cocars" :key="caritem.carno" class="caritem">
-						<img
-							src="/assets\toyotaxcorolla.png"
-							style="width: 420px; height:auto;"
-						/>
+						<img src="/assets\car.png" style="width: 420px; height:auto;" />
 						<h2>Car No: {{ caritem.carno }}</h2>
 						<h2>Color: {{ caritem.carcolor }}</h2>
 						<h2>Model: {{ caritem.carmodel }}</h2>
@@ -144,19 +143,23 @@
 			<div style="margin-top: 3rem;">
 				<div class="another_trip">
 					<div
-						v-for="tripitem in triptable"
+						v-for="(tripitem, index) in triptable"
 						:key="tripitem.tripid"
 						class="tripitem"
 					>
-						<h1>Driver</h1>
-						<p>Trip ID: {{ tripitem.tripid }}</p>
-						<p>Trip Date: {{ tripitem.date }}</p>
-						<p>Time: {{ tripitem.time }}</p>
-						<p>Driver Name: {{ tripitem.drivername }}</p>
-						<p>Client Name: {{ tripitem.clientname }}</p>
-						<p>Pick Up Location: {{ tripitem.pickuplocation }}</p>
-						<p>Drop Off Location: {{ tripitem.destlocation }}</p>
-						<p>Trip Fare: {{ tripitem.fare }}</p>
+						<h1>{{ index + 1 }}</h1>
+						<p><strong>Trip ID: </strong>{{ tripitem.tripid }}</p>
+						<p><strong>Trip Date:</strong> {{ tripitem.date }}</p>
+						<p><strong>Time: </strong>{{ tripitem.time }}</p>
+						<p><strong>Driver Name: </strong>{{ tripitem.drivername }}</p>
+						<p><strong>Client Name:</strong> {{ tripitem.clientname }}</p>
+						<p>
+							<strong>Pick Up Location: </strong>{{ tripitem.pickuplocation }}
+						</p>
+						<p>
+							<strong>Drop Off Location: </strong>{{ tripitem.destlocation }}
+						</p>
+						<p><strong>Trip Fare:</strong> {{ tripitem.fare }}</p>
 					</div>
 				</div>
 			</div>
@@ -240,7 +243,7 @@
 					`http://localhost:5000/getcarownerdailyearning/${this.owner_id}`
 				);
 				let theresponse = await fetched.json();
-				console.log(theresponse);
+				// console.log(theresponse);
 				theresponse.forEach((element) => {
 					this.earning.push({
 						date: element[0],
@@ -253,8 +256,13 @@
 					`http://localhost:5000/getcarownertrips/${this.owner_id}`
 				);
 				let theresponse = await fetched.json();
-				console.log(theresponse);
+				console.log(theresponse, 'Trip table here it goes');
 				theresponse.forEach((element) => {
+					element[5] = element[5].replaceAll(',_Bangladesh', '');
+					element[5] = element[5].replaceAll('_', ' ');
+					element[6] = element[6].replaceAll(',_Bangladesh', '');
+					element[6] = element[6].replaceAll('_', ' ');
+
 					this.triptable.push({
 						tripid: element[0],
 						date: element[1],
@@ -361,13 +369,16 @@
 		transform: translateY(-50%);
 	}
 	.dashboarditems {
-		margin-top: 10rem;
+		position: relative;
+		margin-top: 13rem;
 		color: #eee;
-		padding-left: 2rem;
+		padding-left: 3rem;
 		cursor: pointer;
 	}
 	.dashboarditems div:hover {
-		opacity: 0.69;
+		opacity: 0.88;
+		border-left: 5px solid white;
+		padding-left: 3px;
 	}
 	.dashboarditems .selected {
 		color: rgb(78, 78, 78);
@@ -384,6 +395,8 @@
 		position: relative;
 		left: 50%;
 		transform: translateX(-51%);
+		margin-top: 5%;
+		margin-bottom: 8%;
 	}
 	.driveritem h1 {
 		position: relative;
@@ -399,6 +412,7 @@
 		margin-left: 33px;
 		position: relative;
 		margin-bottom: 50px;
+		margin-top: 50px;
 		min-width: 300px;
 		height: 420px;
 		padding: 2rem;
@@ -433,12 +447,55 @@
 	.drivers .driveritem:hover {
 		color: #eee;
 		text-shadow: 1px 1px rgba(0, 0, 0, 0.3);
-		transition: 1.2s;
+		transition: 0.8s;
 	}
 	.driveritem p {
 		text-align: left;
 	}
+	.another_trip {
+		margin-top: 5%;
+		margin-bottom: 13%;
+	}
 
+	.another_trip,
+	.cars {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.tripitem {
+		margin: 1.5rem;
+		padding: 3rem;
+		text-align: left;
+		width: 800px;
+		background: whitesmoke;
+		/* background: #e8e8e8; */
+		color: rgb(108, 108, 108);
+		filter: drop-shadow(1px 1px 10px #c2c2c2);
+		transition: 0.5s;
+	}
+	.tripitem:hover,
+	.caritem:hover {
+		filter: drop-shadow(1px 1px 13px #696969);
+		transition: 0.25s;
+	}
+
+	.caritem {
+		/* margin-top: 1.5rem; */
+		padding: 2.5rem;
+		width: 420px;
+		background: whitesmoke;
+		/* background: #e8e8e8; */
+		color: rgb(108, 108, 108);
+		filter: drop-shadow(1px 1px 10px #c2c2c2);
+		transition: 0.5s;
+	}
+
+	.carownercars {
+		margin-top: 2%;
+		padding-top: 0.5%;
+	}
 	.userprofile {
 		/* width: 420px;
 		height: 500px; */
@@ -450,13 +507,18 @@
 		margin-right: 30%;
 		background: #e1e1e1;
 		color: rgb(88, 88, 88);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: 0.5s;
 	}
 	.userprofile h1 {
 		font-size: 2.5rem;
 	}
 	.userprofile:hover {
 		background: #c7c7c7;
-		transition: 0.5s;
+		transition: 0.65s;
+		border-radius: 50%;
 	}
 	#userphn {
 		font-size: 1.3rem;
@@ -492,9 +554,15 @@
 
 	tr {
 		background: #e8e5ff;
+		transition: 0.5s;
 	}
 	tr:nth-child(2n) {
 		background: #cdc9ff;
+	}
+	tr:hover {
+		opacity: 0.69;
+		filter: drop-shadow(1px 1px 13px #696969);
+		transition: 0.15s;
 	}
 	th {
 		padding: 1rem;

@@ -747,7 +747,7 @@ async function InsertCarOwner(req, res, data, info) {
 					ROLLBACK TO start_point;
 					END;`;
 
-	console.log(query);
+	// console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -796,10 +796,10 @@ app.post('/insertcarowner', (req, res) => {
 		phn,
 		usertyp,
 	];
-	console.log(ownerinfo);
-	console.log(senddata);
+	// console.log(ownerinfo);
+	// console.log(senddata);
 	InsertCarOwner(req, res, senddata, ownerinfo);
-	console.log(`${senddata}`);
+	// console.log(`${senddata}`);
 });
 
 async function ShowOwnerProfile(req, res, owner_id) {
@@ -831,7 +831,7 @@ app.get('/getcarownerdata/:owner_id', (request, response) => {
 async function ShowOwnerCars(req, res, owner_id) {
 	const query = ` select * from car
 					where COUID ='${owner_id}'`;
-	console.log(query);
+	// console.log(query);
 
 	try {
 		connection = await oracledb.getConnection(dbconnection);
@@ -919,11 +919,11 @@ async function ShowOwnerDailyEarning(req, res, owner_id) {
 
 	const query4 = `select to_char(tripdate,'dd-mm-yyyy'), Sum(amount) from earningdaily group by tripdate`;
 
-	console.log(query);
-	console.log(query1);
-	console.log(query2);
-	console.log(query3);
-	console.log(query4);
+	// console.log(query);
+	// console.log(query1);
+	// console.log(query2);
+	// console.log(query3);
+	// console.log(query4);
 	let iserrorfound = false;
 
 	try {
@@ -952,6 +952,78 @@ app.get('/getcarownerdailyearning/:owner_id', (request, response) => {
 	ShowOwnerDailyEarning(request, response, owner_id);
 });
 
+async function ShowOwnerRelatedTrips(req, res, owner_id) {
+	const query = `drop table tripcldr`;
+	const query1 = `create table tripcldr	(tripid varchar2(32),cl_id varchar2(32), dr_id varchar2(32))`;
+
+	const query2 = ` 
+					create or replace procedure gettripclientdriver
+					is d varchar2(32); e varchar2(32);   
+					Begin  for d in ( select u_id
+														from driver
+														where car_no = (select car_no
+																						from car
+																						where couid ='${owner_id}'))
+							loop for e in
+										( select trip_id,clu_id,dru_id
+											from trip
+											where trip_id= trip_id 
+											and dru_id = d.u_id)
+							loop
+					insert into tripcldr values(e.trip_id, e.clu_id,e.dru_id );    
+							end loop;
+					end loop;
+					EXCEPTION
+					WHEN OTHERS THEN
+						raise_application_error(-20001,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+					End;
+	
+						`;
+
+	const query3 = `Begin
+										gettripclientdriver; 
+				    			End;`;
+
+	const query4 = `select t.trip_id, to_char(t.trip_date, 'Mon dd, yyyy'), to_char(t.start_time, 'hh:mi:ssam') || ' - ' || to_char(t.end_time, 'hh:mi:ssam'), u.name_Fname ||' '|| u.name_Lname as "Client", v.name_Fname ||' '|| v.name_Lname as "Driver", t.pickup_location_name, t.destination_location_name, t.fare_amnt
+									from trip t, userr u, userr v
+									where (t.trip_id,u.u_id ,v.u_id) in (select tripid, cl_id, dr_id
+																											from tripcldr)
+	`;
+
+	// console.log(query);
+	// console.log(query1);
+	// console.log(query2);
+	// console.log(query3);
+	// console.log(query4);
+	// res.status(201).send({ message: 'Hahahaha' });
+	let iserrorfound = false;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+		result1 = await connection.execute(query1);
+		result2 = await connection.execute(query2);
+		result3 = await connection.execute(query3);
+		result4 = await connection.execute(query4);
+	} catch (error) {
+		iserrorfound = true;
+		res.status(401).send({
+			message: error.message,
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			if (!iserrorfound) res.status(200).send(result4.rows);
+		}
+	}
+}
+
+app.get('/getcarownertrips/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+	// console.log(owner_id);
+	ShowOwnerRelatedTrips(request, response, owner_id);
+});
+
 async function ShowOwnerTrips(req, res, owner_id) {
 	const query = `select * from trip`;
 	// console.log(query);
@@ -978,6 +1050,72 @@ app.get('/getcarownertrips/:owner_id', (request, response) => {
 	const owner_id = request.params.owner_id;
 	// console.log(`WHYYYYY ${owner_id}`);
 	ShowOwnerTrips(request, response, owner_id);
+});
+
+async function ShowUserTrips(req, res, owner_id) {
+	const query = `
+	select  Trip_ID as "Trip ID",
+        to_char(Trip_date, 'dd-Mon-yyyy') as "Trip Date",
+        to_char(Start_Time, 'hh:mi:ssam') || ' to ' ||
+        to_char(End_Time, 'hh:mi:ssam') as "Trip Time",
+        c.name_fname || ' ' || c.name_lname as "Client",
+        d.name_fname || ' ' || d.name_lname as "Driver",
+        pickup_location_name || ':    (' || Pick_up_X || ', ' ||
+        Pick_up_Y || ')' as "Pickup Location",
+        destination_location_name || ':    (' || Drop_off_X || ', ' || 
+        Drop_off_Y || ')' as "Drop off Location",
+        Fare_amnt as "Fare Amount",
+        trip_type as "Trip Type"
+from trip,  userr c, userr d
+where clu_id = c.u_id and dru_id = d.u_id and c.u_id = '${owner_id}'
+order by trip_date desc
+	`;
+	const dquery = `
+	select  Trip_ID as "Trip ID",
+        to_char(Trip_date, 'dd-Mon-yyyy') as "Trip Date",
+        to_char(Start_Time, 'hh:mi:ssam') || ' to ' ||
+        to_char(End_Time, 'hh:mi:ssam') as "Trip Time",
+        c.name_fname || ' ' || c.name_lname as "Client",
+        d.name_fname || ' ' || d.name_lname as "Driver",
+        pickup_location_name || ':    (' || Pick_up_X || ', ' ||
+        Pick_up_Y || ')' as "Pickup Location",
+        destination_location_name || ':    (' || Drop_off_X || ', ' || 
+        Drop_off_Y || ')' as "Drop off Location",
+        Fare_amnt as "Fare Amount",
+        trip_type as "Trip Type"
+from trip,  userr c, userr d
+where clu_id = c.u_id and dru_id = d.u_id and d.u_id = '${owner_id}'
+order by trip_date desc
+	`;
+	// console.log(query);
+	let iserrorfound = false;
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+		result = await connection.execute(query);
+		dresult = await connection.execute(dquery);
+		// console.log(result);
+		// console.log(dresult);
+	} catch (error) {
+		iserrorfound = true;
+		res.status(401).send({
+			message: error.message,
+		});
+	} finally {
+		if (connection) {
+			await connection.close();
+			if (!iserrorfound) {
+				if (result.rows.length) res.status(200).send(result.rows);
+				else if (dresult.rows.length) res.status(200).send(dresult.rows);
+			}
+		}
+	}
+}
+
+app.get('/getusertrips/:owner_id', (request, response) => {
+	const owner_id = request.params.owner_id;
+	// console.log(`WHYYYYY ${owner_id}`);
+	ShowUserTrips(request, response, owner_id);
 });
 
 //
