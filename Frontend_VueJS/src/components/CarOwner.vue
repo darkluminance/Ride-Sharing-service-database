@@ -80,7 +80,11 @@
 		<div v-if="activemenu === 3" class="carownerdrivers">
 			<h1>Car Owner Drivers</h1>
 
-			<div class="MommaDriver" style="margin-top: 3rem;">
+			<div
+				class="MommaDriver"
+				style="margin-top: 3rem;"
+				v-if="codrivers.length"
+			>
 				<div class="drivers">
 					<div
 						v-for="driveritem in codrivers"
@@ -102,6 +106,9 @@
 					</div>
 				</div>
 			</div>
+			<div style="margin-top: 3rem;  min-width: 200px;" v-else>
+				<h2>No data to show</h2>
+			</div>
 		</div>
 
 		<div v-if="activemenu === 4" class="dailyearning">
@@ -112,7 +119,7 @@
 				left:42%; transform: translateX(-60%); 
 				max-width: 420px; "
 			>
-				<table class="dailyearning_inside">
+				<table class="dailyearning_inside" v-if="earning.length">
 					<th>
 						<h3>
 							Date
@@ -134,13 +141,20 @@
 						<br />
 					</tr>
 				</table>
+
+				<div
+					style="margin-top: 3rem; margin-left: 59%; min-width: 200px;"
+					v-else
+				>
+					<h2>No data to show</h2>
+				</div>
 			</div>
 		</div>
 
 		<div v-if="activemenu === 5" class="trips">
 			<h1>Trips</h1>
 
-			<div style="margin-top: 3rem;">
+			<div style="margin-top: 3rem;" v-if="triptable.length">
 				<div class="another_trip">
 					<div
 						v-for="(tripitem, index) in triptable"
@@ -163,6 +177,8 @@
 					</div>
 				</div>
 			</div>
+
+			<div style="margin-top: 8rem;" v-else><h2>No data to show</h2></div>
 		</div>
 	</div>
 </template>
@@ -581,6 +597,7 @@
 		padding: 1rem;
 		background: rgb(69, 69, 69);
 		color: #eee;
+		min-width: 280px;
 	}
 	table {
 		border-collapse: collapse;
