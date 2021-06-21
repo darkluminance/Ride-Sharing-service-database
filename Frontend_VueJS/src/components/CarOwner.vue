@@ -258,10 +258,19 @@
 				let theresponse = await fetched.json();
 				console.log(theresponse, 'Trip table here it goes');
 				theresponse.forEach((element) => {
-					element[5] = element[5].replaceAll(',_Bangladesh', '');
-					element[5] = element[5].replaceAll('_', ' ');
-					element[6] = element[6].replaceAll(',_Bangladesh', '');
-					element[6] = element[6].replaceAll('_', ' ');
+
+					if(element[5])
+					{
+						element[5] = element[5].replaceAll(',_Bangladesh', '');
+						element[5] = element[5].replaceAll('_', ' ');
+					}
+					
+					if(element[6])
+					{
+						element[6] = element[6].replaceAll(',_Bangladesh', '');
+						element[6] = element[6].replaceAll('_', ' ');
+					}
+					
 
 					this.triptable.push({
 						tripid: element[0],
@@ -288,10 +297,14 @@
 			this.GetCarOwnerData();
 			this.GetCarOwnerCar();
 			this.GetCarOwnerDriver();
-			this.GetCarOwnerTrips();
+			
 			setTimeout(() => {
 				this.GetCarOwnerDailyEarning();
 			}, 800);
+
+			setTimeout(() => {
+				this.GetCarOwnerTrips();
+			}, 1400);
 		},
 	};
 </script>
