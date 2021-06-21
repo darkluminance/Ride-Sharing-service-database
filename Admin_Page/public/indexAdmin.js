@@ -18,6 +18,7 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'User table';
 
 		//populate headers
 
@@ -31,17 +32,17 @@
 		}
 
 		//populate data
-		for (const data of userdata.rows) {
+		for (const [i, data] of userdata.rows.entries()) {
 			let tablerowdata = '';
 			for (const td of data) {
 				tablerowdata += `<td>${td}</td>`;
 			}
-			table
-				.querySelector('tbody')
-				.insertAdjacentHTML(
-					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
-				);
+			table.querySelector('tbody').insertAdjacentHTML(
+				'afterbegin',
+				`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" 
+					onclick="executedelete('${userdata.rows[i][0]}', '${userdata.rows[i][3]}')" 
+					></i></td></tr> `
+			);
 		}
 	}
 
@@ -55,6 +56,7 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Client table';
 
 		//populate headers
 
@@ -66,9 +68,9 @@
 					`<th>${userdata.headers[userdata.headers.length - index - 1]}</th>`
 				);
 		}
-
+		console.log(userdata.rows);
 		//populate data
-		for (const data of userdata.rows) {
+		for (const [i, data] of userdata.rows.entries()) {
 			let tablerowdata = '';
 			for (const td of data) {
 				tablerowdata += `<td >${td}</td>`;
@@ -77,10 +79,25 @@
 				.querySelector('tbody')
 				.insertAdjacentHTML(
 					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
+					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" onclick="executedelete('${userdata.rows[i][0]}', 'C')" ></i></td></tr> `
 				);
 		}
 	}
+	//DELETE EXECUTION
+	function executedelete(innerhtml, tt) {
+		if (!tt) return;
+		console.log(innerhtml);
+		deletecall(innerhtml, tt);
+
+		location.reload();
+	}
+
+	async function deletecall(uid, tt) {
+		const fetching = await fetch(`http://localhost:5001/d/userr/${uid}/${tt}`);
+		const response = await fetching.json();
+		console.log(response);
+	}
+
 	//---------DRIVER-----------
 	async function update_DrTable(root) {
 		const table = root.querySelector('.table-ref-data');
@@ -91,6 +108,7 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Driver table';
 
 		//populate headers
 
@@ -104,7 +122,7 @@
 		}
 
 		//populate data
-		for (const data of userdata.rows) {
+		for (const [i, data] of userdata.rows.entries()) {
 			let tablerowdata = '';
 			for (const td of data) {
 				tablerowdata += `<td>${td}</td>`;
@@ -113,7 +131,7 @@
 				.querySelector('tbody')
 				.insertAdjacentHTML(
 					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
+					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" onclick="executedelete('${userdata.rows[i][0]}', 'D')" ></i></td></tr> `
 				);
 		}
 	}
@@ -127,6 +145,7 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Trip table';
 
 		//populate headers
 
@@ -149,7 +168,7 @@
 				.querySelector('tbody')
 				.insertAdjacentHTML(
 					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
+					`<tr class="addbtn"> ${tablerowdata}</tr> `
 				);
 		}
 	}
@@ -163,6 +182,7 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Car Owner table';
 
 		//populate headers
 
@@ -176,7 +196,7 @@
 		}
 
 		//populate data
-		for (const data of userdata.rows) {
+		for (const [i, data] of userdata.rows.entries()) {
 			let tablerowdata = '';
 			for (const td of data) {
 				tablerowdata += `<td>${td}</td>`;
@@ -185,7 +205,7 @@
 				.querySelector('tbody')
 				.insertAdjacentHTML(
 					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
+					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" onclick="executedelete('${userdata.rows[i][0]}', 'CO')" ></i></td></tr> `
 				);
 		}
 	}
@@ -199,6 +219,7 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Car table';
 
 		//populate headers
 
@@ -221,7 +242,7 @@
 				.querySelector('tbody')
 				.insertAdjacentHTML(
 					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
+					`<tr class="addbtn"> ${tablerowdata} </tr> `
 				);
 		}
 	}
@@ -236,44 +257,9 @@
 		//clear data
 		table.querySelector('thead tr').innerHTML = '';
 		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Company Bill data daily';
 
 		///populate headers
-
-		for (var index in userdata.headers) {
-			table
-				.querySelector('thead tr')
-				.insertAdjacentHTML(
-					'afterbegin',
-					`<th>${userdata.headers[userdata.headers.length - index - 1]}</th>`
-				);
-		}
-
-		// //populate data
-		for (const data of userdata.rows) {
-			let tablerowdata = '';
-			for (const td of data) {
-				tablerowdata += `<td>${td}</td>`;
-			}
-			table
-				.querySelector('tbody')
-				.insertAdjacentHTML(
-					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
-				);
-		}
-	}
-	//--------------Company Bill monthy------------
-	async function update_bill_monthly(root) {
-		const table = root.querySelector('.table-ref-data');
-		const response = await fetch('http://localhost:5001/combillmonthly');
-		const userdata = await response.json();
-		console.log(userdata.headers);
-
-		//clear data
-		table.querySelector('thead tr').innerHTML = '';
-		table.querySelector('tbody').innerHTML = '';
-
-		//populate headers
 
 		for (var index in userdata.headers) {
 			table
@@ -294,7 +280,44 @@
 				.querySelector('tbody')
 				.insertAdjacentHTML(
 					'afterbegin',
-					`<tr class="addbtn"> ${tablerowdata} <td><i class="fas fa-trash deleteBtn" ></i></td></tr> `
+					`<tr class="addbtn"> ${tablerowdata}</tr> `
+				);
+		}
+	}
+	//--------------Company Bill monthy------------
+	async function update_bill_monthly(root) {
+		const table = root.querySelector('.table-ref-data');
+		const response = await fetch('http://localhost:5001/combillmonthly');
+		const userdata = await response.json();
+		console.log(userdata.headers);
+
+		//clear data
+		table.querySelector('thead tr').innerHTML = '';
+		table.querySelector('tbody').innerHTML = '';
+		document.querySelector('h2.pt-3').innerHTML = 'Company Bill data monthly';
+
+		//populate headers
+
+		for (var index in userdata.headers) {
+			table
+				.querySelector('thead tr')
+				.insertAdjacentHTML(
+					'afterbegin',
+					`<th>${userdata.headers[userdata.headers.length - index - 1]}</th>`
+				);
+		}
+
+		//populate data
+		for (const [i, data] of userdata.rows.entries()) {
+			let tablerowdata = '';
+			for (const td of data) {
+				tablerowdata += `<td>${td}</td>`;
+			}
+			table
+				.querySelector('tbody')
+				.insertAdjacentHTML(
+					'afterbegin',
+					`<tr class="addbtn"> ${tablerowdata}</tr> `
 				);
 		}
 	} //END OF TABLES
@@ -310,7 +333,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>loading</td>
+                    <td><strong>Welcome! Click on any table on the left to view</strong></td>
                 <tr>
             </tbody>
         `;
@@ -324,6 +347,7 @@
 		var car = document.getElementById('car');
 		var bill_daily = document.getElementById('cbd');
 		var bill_monthly = document.getElementById('cbm');
+		var deletebtn = document.getElementsByClassName('deleteBtn');
 
 		if (user) {
 			user.addEventListener('click', function () {

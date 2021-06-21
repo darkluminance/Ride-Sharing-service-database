@@ -126,7 +126,8 @@ async function get_ClData(req, res) {
 
 //------------DRIVER-----------
 async function get_DrData(req, res) {
-	const query = `select * from driver`;
+	const query = `select u_id, nid, car_no, total_earning, '(' || dr_location_x || ' ' || dr_location_y || ')' 
+	from driver`;
 	var udata = null;
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -139,47 +140,52 @@ async function get_DrData(req, res) {
 			headers: [
 				'User ID',
 				'NID',
-				'Car Owner ID',
 				'Car Number',
-				'Driver Location X',
-				'Driver Location Y',
-				'Total Earning',
-				'      ',
+				'Total Earning (Tk.)',
+				'Driver Last Logged in Location',
+				'             ',
 			],
 			rows: result.rows,
 		};
 
 		console.log('Connected');
+		res.status(200).send(udata); //Sends back the data with success status 200
 	} catch (error) {
 		//If any error occurs while connecting or fetching data
+		res.status(401).send({
+			message: error.message,
+		});
 	} finally {
 		if (connection) {
 			await connection.close(); //Closes the connection
 			console.log('Connection ended');
 		}
-		res.status(200).send(udata); //Sends back the data with success status 200
 	}
 }
 //------------TRIP-----------
 async function get_Trip(req, res) {
-	const query = `select  Trip_ID,
-			to_char(Start_Time, 'hh:mi:ssam'),
-			to_char(End_Time, 'hh:mi:ssam'),
+	const query = `select  Trip_ID,	
+			to_char(Trip_date, 'Mon dd, yyyy') || ' ' ||
+			to_char(Start_Time, 'hh:mi:ssam') || ' to ' ||
+			to_char(End_Time, 'hh:mi:ssam') as "Time",
 			trip_type,
 			Fare_Init_amnt,
 			Fare_amnt,
-			Pick_up_X,
-			Pick_up_Y,
-			Drop_off_X,
-			Drop_off_Y,
-			pickup_location_name,
-			destination_location_name,
+			pickup_location_name || ' ' || '(' ||
+			Pick_up_X || ', ' ||
+			Pick_up_Y || ')',
+			destination_location_name  || ' ' || '(' ||
+			Drop_off_X || ', ' ||
+			Drop_off_Y || ')',
 			CL_Rating,
 			Dr_Rating,
-			to_char(Trip_date, 'dd-mon-yyyy'),
+			c.name_fname || ' ' || c.name_lname as "Client Name",
+			d.name_fname || ' ' || d.name_lname as "Driver Name",
 			CLU_ID ,
 			DRU_ID
-			from trip`;
+			from trip, userr c, userr d
+			where clu_id = c.u_id and dru_id = d.u_id
+			order by trip_date`;
 	var udata = null;
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -191,20 +197,16 @@ async function get_Trip(req, res) {
 		udata = {
 			headers: [
 				'Trip ID',
-				'Start Time',
-				'End Time',
+				'Trip Time',
 				'Trip Type',
 				'Fare Initial Amount',
 				'Fare Amount',
-				'Pick Up X',
-				'Pick Up Y',
-				'Drop Off X',
-				' Drop Off Y ',
-				'Pickup Location Name',
-				'Destination Location Name',
+				'Pick Up Location',
+				'Drop Off Location',
 				'Client Rating',
 				'Driver Rating',
-				'Trip Date',
+				'Client Name',
+				'Driver Name',
 				'Client ID',
 				'Driver ID',
 				'      ',
@@ -215,6 +217,7 @@ async function get_Trip(req, res) {
 		console.log('Connected');
 	} catch (error) {
 		//If any error occurs while connecting or fetching data
+		res.status(401).send({ message: error.message });
 	} finally {
 		if (connection) {
 			await connection.close(); //Closes the connection
@@ -225,7 +228,7 @@ async function get_Trip(req, res) {
 }
 //------------CAR OWNER-----------
 async function get_CarOwn(req, res) {
-	const query = `select *from Car_Owner`;
+	const query = `select cc.u_id, u.Name_Fname || ' ' || u.name_lname as "Name", cc.n_id, cc.owner_earning from Car_Owner cc, userr u where u.u_id = cc.u_id`;
 	var udata = null;
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -235,7 +238,7 @@ async function get_CarOwn(req, res) {
 		result = await connection.execute(query);
 
 		udata = {
-			headers: ['User ID', 'Car Rent', 'NID', 'Car Number', '      '],
+			headers: ['User ID', 'Name', 'NID', 'Earning', '      '],
 			rows: result.rows,
 		};
 
@@ -252,7 +255,7 @@ async function get_CarOwn(req, res) {
 }
 //------------CAR-----------
 async function get_Car(req, res) {
-	const query = `select *from Car`;
+	const query = `select car_no, car_color, car_model, car_type, u.Name_Fname || ' ' || u.name_lname as "Name", couid, percentage from car, userr u where u.u_id = couid`;
 	var udata = null;
 	try {
 		//Try to perform a connection to the oracle database using the credentials above
@@ -267,6 +270,8 @@ async function get_Car(req, res) {
 				'Car Color',
 				'Car Model',
 				'Car Type',
+				'Car Owner Name',
+				'Car Owner ID',
 				'Percentage',
 				'      ',
 			],
@@ -353,7 +358,7 @@ async function get_ComBillM(req, res) {
 //data we'll search
 async function getUserData(req, res, uid) {
 	//Oracle query for getting data from userr table
-	const query = `SELECT u_id,Name_Fname,Name_Lname,Phone_No,TO_DATE(dob), TRUNC(TO_NUMBER(SYSDATE - TO_DATE(dob)) / 365.25) AS AGE, user_typ,user_name FROM Userr WHERE u_id = '${uid}'`;
+	const query = `SELECT u_id,Name_Fname || ' ' || Name_Lname as "Name",Phone_No,TO_DATE(dob), TRUNC(TO_NUMBER(SYSDATE - TO_DATE(dob)) / 365.25) AS AGE, user_typ,user_name FROM Userr WHERE u_id = '${uid}'`;
 	// console.log(query);
 
 	try {
@@ -398,6 +403,124 @@ async function getUserID(req, res, un) {
 		res.status(200).send(result.rows[0]);
 	}
 }
+// DELETE USERR
+async function deleteuserr(req, res, un, t) {
+	const query = `
+							DECLARE
+								user_id_to_delete varchar2(32) := '${un}';
+								user_type varchar2(5) := '${t}';
+							BEGIN
+								CASE user_type
+									WHEN 'C' THEN  
+											BEGIN
+											SAVEPOINT start_point1;
+													delete from trip
+													where clu_ID = user_id_to_delete;
+													
+													delete from clientt
+													where u_id = user_id_to_delete;
+													
+													delete from cliver
+													where u_id = user_id_to_delete;
+													
+													delete from userr
+													where u_id = user_id_to_delete;
+													COMMIT;
+											EXCEPTION
+															WHEN OTHERS THEN
+															raise_application_error(-20001,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+															ROLLBACK TO start_point1;
+											END;
+										
+
+									WHEN 'D' THEN
+											BEGIN
+											SAVEPOINT start_point1;
+											
+													delete from hire
+													where dru_ID = user_id_to_delete;
+													
+													delete from trip
+													where dru_ID = user_id_to_delete;
+													
+													delete from driver
+													where u_id = user_id_to_delete;
+													
+													delete from cliver
+													where u_id = user_id_to_delete;
+													
+													delete from userr
+													where u_id = user_id_to_delete;
+													COMMIT;
+											EXCEPTION
+															WHEN OTHERS THEN
+															ROLLBACK TO start_point1;
+											END;
+
+									WHEN 'CO'   THEN
+											BEGIN
+													SAVEPOINT start_point1;
+															
+															delete from company_bill
+															where cou_id =user_id_to_delete;
+															
+															update driver 
+															set car_no = '0'
+															where car_no = (select car_no
+																							from car 
+																							where couid =user_id_to_delete);
+															
+															delete from car
+															where couid = user_id_to_delete;
+															
+															delete from hire
+															where cou_ID = user_id_to_delete;
+															
+															delete from car_owner
+															where u_id = user_id_to_delete;
+															
+															delete from userr
+															where u_id = user_id_to_delete;
+													COMMIT;
+											EXCEPTION
+															WHEN OTHERS THEN
+																	raise_application_error(-20001,'An error was encountered - '||SQLCODE||' -ERROR- '||SQLERRM);
+															ROLLBACK TO start_point1;
+											END;
+										
+
+								END CASE;
+							END;
+	`;
+	// console.log(query);
+
+	// res.status(200).send({
+	// 	message: `Success ${un}`,
+	// });
+
+	try {
+		connection = await oracledb.getConnection(dbconnection);
+
+		result = await connection.execute(query);
+
+		res.status(200).send({
+			message: `Success ${un} ${t}`,
+			ok: true,
+		});
+
+		//if (result.rows[0] == null) throw 'Data not found';
+
+		// console.log('Connected');
+	} catch (error) {
+		res.status(404).send({ message: error.message });
+	} finally {
+		if (connection) {
+			await connection.close();
+			console.log('Connection ended');
+		}
+		// res.status(200).send(result.rows[0]);
+	}
+}
 
 //GET request --> which means calls for getting data from the database
 //Fetching user data where user id is given
@@ -405,6 +528,15 @@ app.get('/getuserdata/:id', (request, response) => {
 	const usid = request.params.id; //ID is the user id using which we'll search the database
 
 	getUserData(request, response, usid);
+});
+
+//GET request for deleting user data
+app.get('/d/userr/:id/:tt', (request, response) => {
+	const usid = request.params.id;
+	const typet = request.params.tt;
+	console.log('Get request obtained for deleting user', usid, typet);
+
+	deleteuserr(request, response, usid, typet);
 });
 
 //GET request for getting user id from a username
