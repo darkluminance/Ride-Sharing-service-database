@@ -13,6 +13,7 @@
     "chance": "^1.1.7",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "http-server": "^0.12.3",
     "oracledb": "^5.2.0",
     "shuffle-array": "^1.0.1"
   },

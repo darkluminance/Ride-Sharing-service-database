@@ -347,7 +347,14 @@
 		var car = document.getElementById('car');
 		var bill_daily = document.getElementById('cbd');
 		var bill_monthly = document.getElementById('cbm');
+		var logout_btn = document.getElementsByClassName('lgt');
 		var deletebtn = document.getElementsByClassName('deleteBtn');
+
+		logout_btn.addEventListener('click', function () {
+			localStorage.removeItem('token');
+			window.location.replace('http://localhost:8081');
+			location.reload();
+		});
 
 		if (user) {
 			user.addEventListener('click', function () {

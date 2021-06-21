@@ -71,7 +71,6 @@
 	</div>
 
 	<div class="carowner" v-if="userdata.type === 'CO'">
-
 		<CarOwner :owner_id="uid"></CarOwner>
 	</div>
 
@@ -619,6 +618,14 @@
 							type: udata[6],
 							username: udata[7],
 						};
+
+						const resultt = this.userdata.uid.charAt(0);
+						if (resultt === 'a' && localStorage.getItem('token')) {
+							window.location.replace(
+								'http://localhost:8082/public/index.html'
+							);
+							localStorage.removeItem('token');
+						}
 
 						//Data is loaded
 						this.loaded = true;

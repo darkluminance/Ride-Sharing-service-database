@@ -74,7 +74,7 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 800px;
-		height: 600px;
+		height: 690px;
 		background: #eee;
 		margin: 0;
 		padding: 2rem;
@@ -90,6 +90,7 @@
 	}
 
 	.ratingbtn {
+		margin-top: 2rem;
 		display: flex;
 		justify-content: center;
 		align-items: center;
