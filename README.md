@@ -72,3 +72,7 @@ The main point to remember is everytime you reopen vscode, you'll have to restar
 2. Open up the project in vs code or any editor and start the backend server using node **index.js** or **npx nodemon** command.
 3. Install http-server package using **npm install -g http-server** command.
 4. To start an http server for the admin page run this command from the root folder **http-server ./**
+5. Now you can visit the admin page using localhost:<port number>/public/index.html. Don't forget to change username password of database from the index.js file as well.
+   
+## Things to keep in mind
+   1. Always start the frontend server first before admin page http-server while logging in using an admin account because the url used for admin page in the project was **localhost:8082/public/index.html** and for frontend it was **localhost:8081**. If you wish to change it, you can change the url from the LoginPage.vue file in Frontend project.
