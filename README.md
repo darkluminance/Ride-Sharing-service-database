@@ -72,5 +72,3 @@ The main point to remember is everytime you reopen vscode, you'll have to restar
 2. Open up the project in vs code or any editor and start the backend server using node **index.js** or **npx nodemon** command.
 3. Install http-server package using **npm install -g http-server** command.
 4. To start an http server for the admin page run this command from the root folder **http-server ./**
-
-6. 
